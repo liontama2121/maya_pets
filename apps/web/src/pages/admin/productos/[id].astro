@@ -1,0 +1,58 @@
+---
+import { hasRole } from "@maya/api";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import ArchiveButton from "../../../islands/admin/ArchiveButton";
+import ProductEditor, { type EditorProduct } from "../../../islands/admin/ProductEditor";
+import Admin from "../../../layouts/Admin.astro";
+import { adminFetch } from "../../../lib/admin-server";
+
+const staff = Astro.locals.staff!;
+if (!hasRole(staff, "vendedor")) return Astro.redirect("/admin");
+const id = Number(Astro.params.id);
+if (!Number.isInteger(id) || id <= 0) return Astro.redirect("/admin/productos");
+
+let product: EditorProduct;
+try {
+  product = await adminFetch<EditorProduct>(Astro, `/products/${id}`);
+} catch {
+  return Astro.redirect("/admin/productos");
+}
+const categories = await adminFetch<{ id: number; name: string }[]>(Astro, "/categories");
+const isAdmin = hasRole(staff);
+const created = Astro.url.searchParams.get("creado") === "1";
+---
+
+<Admin title={product.name}>
+  <a href="/admin/productos" class="inline-flex min-h-11 items-center gap-2 font-medium text-teal-700 hover:underline">
+    <ArrowLeft size={18} aria-hidden="true" /> Productos
+  </a>
+  <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">{product.name}</h1>
+    {isAdmin && <ArchiveButton client:idle id={product.id} active={product.active} />}
+  </div>
+  {
+    created && (
+      <p role="status" class="mt-3 rounded-2xl bg-teal-100 px-4 py-3 font-medium text-teal-900">
+        Producto creado. Ya está en la tienda.
+      </p>
+    )
+  }
+  {
+    isAdmin ? (
+      <div class="mt-6">
+        <ProductEditor client:load categories={categories.map(({ id, name }) => ({ id, name }))} product={product} />
+      </div>
+    ) : (
+      <section class="mt-6 rounded-[var(--radius-toy)] bg-white p-5" aria-label="Inventario">
+        <ul class="divide-y divide-line">
+          {product.variants.map((v) => (
+            <li class="flex min-h-12 items-center justify-between">
+              <span>{v.name}</span>
+              <span class="tnum font-semibold">{v.stock} und.</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Admin>

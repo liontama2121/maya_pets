@@ -1,0 +1,16 @@
+---
+import { getSettings, hasRole, monthInBogota } from "@maya/api";
+import ContestManager from "../../islands/admin/ContestManager";
+import Admin from "../../layouts/Admin.astro";
+import { envOf } from "../../lib/server";
+
+if (!hasRole(Astro.locals.staff!)) return Astro.redirect("/admin");
+const settings = await getSettings(envOf(Astro).DB);
+---
+
+<Admin title="Concurso del mes">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Concurso del mes</h1>
+  <div class="mt-6">
+    <ContestManager client:load initialMonth={monthInBogota()} initialSettings={settings} />
+  </div>
+</Admin>

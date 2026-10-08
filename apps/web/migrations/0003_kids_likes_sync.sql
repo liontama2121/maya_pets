@@ -1,0 +1,1 @@
+ALTER TABLE `kids_contests` ADD `likes_synced_at` text;

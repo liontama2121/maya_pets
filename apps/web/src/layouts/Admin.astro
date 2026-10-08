@@ -1,0 +1,90 @@
+---
+import "../styles/global.css";
+import { hasRole } from "@maya/api";
+import { CalendarStar } from "@phosphor-icons/react/dist/ssr/CalendarStar";
+import { Coin } from "@phosphor-icons/react/dist/ssr/Coin";
+import { House } from "@phosphor-icons/react/dist/ssr/House";
+import { PaintBrush } from "@phosphor-icons/react/dist/ssr/PaintBrush";
+import { Trophy } from "@phosphor-icons/react/dist/ssr/Trophy";
+import { Package } from "@phosphor-icons/react/dist/ssr/Package";
+import { SquaresFour } from "@phosphor-icons/react/dist/ssr/SquaresFour";
+import { Storefront } from "@phosphor-icons/react/dist/ssr/Storefront";
+import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree";
+import Logo from "../components/site/Logo.astro";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+const staff = Astro.locals.staff!;
+const path = Astro.url.pathname;
+
+const nav = [
+  { href: "/admin", label: "Resumen", Icon: House, show: true, exact: true },
+  { href: "/admin/productos", label: "Productos", Icon: Package, show: hasRole(staff, "vendedor") },
+  { href: "/admin/coin", label: "Entregar COIN", Icon: Coin, show: hasRole(staff, "vendedor") },
+  { href: "/admin/categorias", label: "Categorías", Icon: SquaresFour, show: hasRole(staff) },
+  { href: "/admin/temporadas", label: "Temporadas", Icon: CalendarStar, show: hasRole(staff) },
+  { href: "/admin/concurso", label: "Concurso", Icon: Trophy, show: hasRole(staff) },
+  { href: "/admin/kids", label: "MAYA Kids", Icon: PaintBrush, show: hasRole(staff) },
+  { href: "/admin/equipo", label: "Equipo", Icon: UsersThree, show: hasRole(staff) },
+].filter((n) => n.show);
+
+const isCurrent = (href: string, exact = false) => (exact ? path === href : path === href || path.startsWith(`${href}/`));
+const roleLabel = staff.roles.includes("admin") ? "Administradora" : staff.roles.includes("vendedor") ? "Ventas" : "Adopciones";
+---
+
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title} · Panel MAYA Pets</title>
+    <link rel="icon" href="/brand/favicon.png" type="image/png" />
+  </head>
+  <body class="min-h-dvh bg-ground">
+    <a href="#panel" class="sr-only z-50 rounded-full bg-sun-400 px-5 py-3 font-semibold text-teal-900 focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
+      Saltar al contenido
+    </a>
+    <div class="lg:grid lg:grid-cols-[248px_1fr]">
+      <aside class="on-field bg-teal-700 text-white shadow-[inset_-4px_0_0_var(--color-teal-900)] lg:sticky lg:top-0 lg:h-dvh">
+        <div class="flex h-16 items-center justify-between gap-3 px-4 lg:h-20 lg:px-5">
+          <a href="/admin" class="rounded-xl" aria-label="Panel de MAYA Pets, inicio"><Logo height={44} eager /></a>
+          <a href="/" class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-medium hover:bg-white/10 lg:hidden">
+            <Storefront size={18} aria-hidden="true" /> Tienda
+          </a>
+        </div>
+        <nav aria-label="Panel" class="overflow-x-auto px-3 pb-3 lg:px-3">
+          <ul class="flex gap-1 lg:flex-col">
+            {
+              nav.map(({ href, label, Icon, exact }) => (
+                <li>
+                  <a
+                    href={href}
+                    aria-current={isCurrent(href, exact) ? "page" : undefined}
+                    class="flex min-h-11 items-center gap-3 whitespace-nowrap rounded-full px-4 font-medium transition-colors hover:bg-white/10 aria-[current=page]:bg-sun-400 aria-[current=page]:text-teal-900 aria-[current=page]:shadow-[inset_0_-3px_0_var(--color-sun-600)]"
+                  >
+                    <Icon size={20} weight={isCurrent(href, exact) ? "fill" : "regular"} aria-hidden="true" />
+                    {label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <div class="hidden border-t border-white/15 px-5 py-4 lg:absolute lg:inset-x-0 lg:bottom-0 lg:block">
+          <p class="font-medium">{staff.name}</p>
+          <p class="text-sm text-white/80">{roleLabel}</p>
+          <a href="/" class="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline">
+            <Storefront size={18} aria-hidden="true" /> Ver la tienda
+          </a>
+        </div>
+      </aside>
+
+      <main id="panel" class="min-w-0 px-4 py-6 sm:px-8 lg:py-10">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

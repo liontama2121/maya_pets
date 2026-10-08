@@ -1,0 +1,39 @@
+{
+  "name": "@maya/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=../../.env ../../node_modules/astro/astro.js dev",
+    "build": "astro build",
+    "preview": "node --env-file=../../.env ../../node_modules/wrangler/bin/wrangler.js dev",
+    "typecheck": "astro check",
+    "brand:colors": "node scripts/extract-brand-colors.mjs",
+    "db:migrate": "node --env-file=../../.env ../../node_modules/wrangler/bin/wrangler.js d1 migrations apply maya-db --remote",
+    "db:seed": "node ../../packages/api/seed/build-seed.mjs && node --env-file=../../.env ../../node_modules/wrangler/bin/wrangler.js d1 execute maya-db --remote --file=../../packages/api/seed/seed.sql",
+    "deploy": "astro build && node --env-file=../../.env ../../node_modules/wrangler/bin/wrangler.js deploy"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
+    "@astrojs/react": "^4.4.2",
+    "@fontsource-variable/rubik": "^5.3.0",
+    "@maya/api": "*",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tailwindcss/vite": "^4.3.3",
+    "animejs": "^4.5.0",
+    "astro": "^5.18.2",
+    "oauth4webapi": "^3.8.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@cloudflare/workers-types": "^4.20260101.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.9.0",
+    "wrangler": "^4.148.0"
+  }
+}

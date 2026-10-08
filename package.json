@@ -1,0 +1,21 @@
+{
+  "name": "maya-pets",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @maya/web",
+    "build": "npm run build -w @maya/web",
+    "db:generate": "npm run db:generate -w @maya/api",
+    "db:migrate": "npm run db:migrate -w @maya/web",
+    "db:seed": "npm run db:seed -w @maya/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20.18"
+  }
+}

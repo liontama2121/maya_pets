@@ -1,0 +1,20 @@
+---
+import { hasRole } from "@maya/api";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import ProductEditor from "../../../islands/admin/ProductEditor";
+import Admin from "../../../layouts/Admin.astro";
+import { adminFetch } from "../../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!)) return Astro.redirect("/admin/productos");
+const categories = await adminFetch<{ id: number; name: string; active: boolean }[]>(Astro, "/categories");
+---
+
+<Admin title="Nuevo producto">
+  <a href="/admin/productos" class="inline-flex min-h-11 items-center gap-2 font-medium text-teal-700 hover:underline">
+    <ArrowLeft size={18} aria-hidden="true" /> Productos
+  </a>
+  <h1 class="mt-2 text-3xl font-bold [font-variation-settings:'wght'_720]">Nuevo producto</h1>
+  <div class="mt-6">
+    <ProductEditor client:load categories={categories.map(({ id, name }) => ({ id, name }))} />
+  </div>
+</Admin>

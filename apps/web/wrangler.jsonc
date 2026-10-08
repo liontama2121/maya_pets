@@ -1,0 +1,29 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "maya-pets",
+  "main": "./dist/_worker.js/index.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "maya-db",
+      "database_id": "2d554d9f-ef9b-4f9c-bdda-e64f85ac2c7a",
+      "migrations_dir": "migrations",
+      // Sin emulación local: desarrollo y producción usan la D1 real.
+      "remote": false
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "maya-media",
+      "remote": false
+    }
+  ]
+}

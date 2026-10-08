@@ -1,0 +1,16 @@
+---
+import { hasRole } from "@maya/api";
+import CategoriesManager, { type AdminCategory } from "../../islands/admin/CategoriesManager";
+import Admin from "../../layouts/Admin.astro";
+import { adminFetch } from "../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!)) return Astro.redirect("/admin");
+const categories = await adminFetch<AdminCategory[]>(Astro, "/categories");
+---
+
+<Admin title="Categorías">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Categorías</h1>
+  <div class="mt-4">
+    <CategoriesManager client:load initial={categories} />
+  </div>
+</Admin>

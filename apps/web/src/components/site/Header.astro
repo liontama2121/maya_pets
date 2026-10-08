@@ -1,0 +1,83 @@
+---
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import CartButton from "../../islands/site/CartButton";
+import Logo from "./Logo.astro";
+
+const path = Astro.url.pathname;
+const especie = Astro.url.searchParams.get("especie");
+const links = [
+  { href: "/tienda?especie=perro", label: "Perros", current: path === "/tienda" && especie === "perro" },
+  { href: "/tienda?especie=gato", label: "Gatos", current: path === "/tienda" && especie === "gato" },
+  { href: "/tienda", label: "Tienda", current: path.startsWith("/tienda") && !especie },
+  { href: "/juega", label: "Juega y gana", current: path.startsWith("/juega") },
+  { href: "/maya-kids", label: "MAYA Kids", current: path.startsWith("/maya-kids") },
+  { href: "/adopta", label: "Adopta con Maya", current: path.startsWith("/adopta") },
+];
+---
+
+<header class="on-field sticky top-0 z-40 bg-[var(--field)] text-white shadow-[inset_0_-4px_0_var(--field-lip)]">
+  <div class="mx-auto flex h-[68px] max-w-[1280px] items-center gap-4 px-4 sm:px-6">
+    <a href="/" class="shrink-0 rounded-xl" aria-label="MAYA Pets, ir al inicio">
+      <Logo height={56} eager />
+    </a>
+
+    <nav aria-label="Principal" class="ml-auto hidden md:block">
+      <ul class="flex items-center gap-1">
+        {
+          links.map((l) => (
+            <li>
+              <a
+                href={l.href}
+                aria-current={l.current ? "page" : undefined}
+                class:list={[
+                  "relative inline-flex h-11 items-center gap-1.5 rounded-full px-4 font-medium transition-colors hover:bg-white/10",
+                  l.current && "bg-white/15",
+                  l.href === "/adopta" && "text-[var(--accent)]",
+                ]}
+              >
+                {l.href === "/adopta" && <PawPrint weight="fill" size={18} aria-hidden="true" />}
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2 md:ml-2">
+      <CartButton client:idle />
+      <details class="group relative md:hidden">
+        <summary
+          class="flex h-11 cursor-pointer list-none items-center rounded-full px-4 font-medium hover:bg-white/10 [&::-webkit-details-marker]:hidden"
+          aria-label="Abrir menú"
+        >
+          Menú
+        </summary>
+        <nav
+          aria-label="Principal"
+          class="absolute right-0 top-[calc(100%+12px)] w-64 rounded-[var(--radius-toy)] bg-white p-2 text-ink shadow-[0_20px_40px_-16px_rgb(4_42_43/0.5)]"
+        >
+          <ul>
+            {
+              links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    aria-current={l.current ? "page" : undefined}
+                    class="flex h-12 items-center gap-2 rounded-2xl px-4 font-medium hover:bg-teal-50 aria-[current=page]:bg-teal-100"
+                  >
+                    {l.href === "/adopta" && <PawPrint weight="fill" size={18} className="text-teal-700" aria-hidden="true" />}
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li>
+              <a href="/#contacto" class="flex h-12 items-center rounded-2xl px-4 font-medium hover:bg-teal-50">Contacto</a>
+            </li>
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

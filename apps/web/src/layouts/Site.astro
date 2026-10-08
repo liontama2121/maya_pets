@@ -1,0 +1,131 @@
+---
+import "../styles/global.css";
+import { liveSeason, type LiveSeason } from "@maya/api";
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
+import { Ghost } from "@phosphor-icons/react/dist/ssr/Ghost";
+import { Heart } from "@phosphor-icons/react/dist/ssr/Heart";
+import { Snowflake } from "@phosphor-icons/react/dist/ssr/Snowflake";
+import { Sparkle } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import Footer from "../components/site/Footer.astro";
+import Header from "../components/site/Header.astro";
+import CartDrawer from "../islands/site/CartDrawer";
+import { WHATSAPP_NUMBER, whatsappLink } from "../lib/format";
+import { envOf } from "../lib/server";
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  /** Si la página ya consultó la temporada, la pasa para no repetir la consulta. */
+  season?: LiveSeason | null;
+  noindex?: boolean;
+}
+
+const { title, description, image = "/brand/og-maya.png", noindex = false } = Astro.props;
+const season = Astro.props.season !== undefined ? Astro.props.season : await liveSeason(envOf(Astro).DB);
+const preset = season?.preset;
+
+const fullTitle = title.includes("MAYA Pets") ? title : `${title} | MAYA Pets Bogotá`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+
+const seasonStyle = preset
+  ? `--field:${preset.field};--field-lip:${preset.fieldLip};--accent:${preset.accent};--accent-lip:${preset.accentLip};--on-accent:${preset.onAccent}`
+  : undefined;
+const AmbientIcon = preset ? { Ghost, Heart, Snowflake, Sparkle }[preset.ambientIcon] : null;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "PetStore",
+  name: "MAYA Pets",
+  slogan: "Mi mascota, mi familia",
+  url: Astro.site?.toString(),
+  telephone: `+${WHATSAPP_NUMBER}`,
+  areaServed: { "@type": "City", name: "Bogotá" },
+  address: { "@type": "PostalAddress", addressLocality: "Bogotá", addressCountry: "CO" },
+};
+---
+
+<!doctype html>
+<html lang="es-CO" style={seasonStyle} data-season={season?.event.slug}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={preset?.field ?? "#0f6267"} />
+    <link rel="icon" href="/brand/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="MAYA Pets" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="geo.region" content="CO-DC" />
+    <meta name="geo.placename" content="Bogotá" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <a
+      href="#contenido"
+      class="sr-only z-50 rounded-full bg-[var(--accent)] px-5 py-3 font-semibold text-[var(--on-accent)] focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+    >
+      Saltar al contenido
+    </a>
+
+    <Header />
+
+    {
+      season && season.event.ambient && AmbientIcon && (
+        <div
+          data-ambient
+          aria-hidden="true"
+          class="pointer-events-none fixed inset-0 z-[35] overflow-hidden text-[var(--accent)]"
+        >
+          {Array.from({ length: 9 }, () => (
+            <span data-ambient-item class="absolute -top-16 block opacity-0">
+              <AmbientIcon weight="fill" size={28} />
+            </span>
+          ))}
+        </div>
+      )
+    }
+
+    <main id="contenido" class="relative flex-1">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <a
+      href={whatsappLink()}
+      target="_blank"
+      rel="noopener"
+      data-squish
+      class="fixed bottom-4 right-4 z-30 inline-flex size-14 items-center justify-center rounded-full bg-[var(--accent)] text-[var(--on-accent)] shadow-[inset_0_-4px_0_var(--accent-lip),0_12px_24px_-10px_rgb(4_42_43/0.6)] transition-transform hover:-translate-y-0.5 sm:bottom-6 sm:right-6"
+      aria-label="Escríbenos por WhatsApp"
+    >
+      <WhatsappLogo weight="fill" size={30} aria-hidden="true" />
+    </a>
+
+    <CartDrawer client:idle />
+
+    <template id="paw-tpl"><PawPrint weight="fill" size="100%" /></template>
+
+    <script>
+      import { initAmbient, initSquishButtons } from "../motion/maya";
+      initSquishButtons();
+      const ambient = document.querySelector<HTMLElement>("[data-ambient]");
+      if (ambient) initAmbient(ambient);
+    </script>
+  </body>
+</html>

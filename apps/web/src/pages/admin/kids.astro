@@ -1,0 +1,17 @@
+---
+import { hasRole } from "@maya/api";
+import KidsManager from "../../islands/admin/KidsManager";
+import Admin from "../../layouts/Admin.astro";
+
+if (!hasRole(Astro.locals.staff!)) return Astro.redirect("/admin");
+---
+
+<Admin title="MAYA Kids">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">MAYA Kids</h1>
+  <p class="mt-1 max-w-2xl text-ink-soft">
+    Concursos de dibujo: revisa los dibujos que llegan, publícalos en Instagram y al final gana el que tenga más likes.
+  </p>
+  <div class="mt-6">
+    <KidsManager client:load />
+  </div>
+</Admin>

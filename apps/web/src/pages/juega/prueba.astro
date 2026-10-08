@@ -1,0 +1,36 @@
+---
+import CasaGame from "../../islands/site/CasaGame";
+import LluviaGame from "../../islands/site/LluviaGame";
+import Site from "../../layouts/Site.astro";
+
+const juego = Astro.url.searchParams.get("juego") === "lluvia" ? "lluvia" : "casa";
+const games = [
+  { id: "casa", name: "Maya en casa", text: "Come las croquetas y escapa de la aspiradora, la manguera, el secador y el cartero." },
+  { id: "lluvia", name: "Lluvia de premios", text: "Atrapa snacks con el plato de Maya y esquiva lo que les hace daño." },
+] as const;
+const current = games.find((g) => g.id === juego)!;
+---
+
+<Site title={`${current.name} (prueba)`} description={`Prueba los juegos de MAYA Pets. ${current.text}`} noindex>
+  <section class="mx-auto max-w-[1280px] px-4 py-6 sm:px-6 sm:py-10">
+    <div class="grid items-start gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
+      <div>
+        <h1 class="text-3xl font-bold [font-variation-settings:'wght'_740] sm:text-4xl">{current.name}</h1>
+        <p class="mt-2 max-w-[36ch] text-ink-soft">{current.text}</p>
+        <nav aria-label="Elegir juego" class="mt-4 flex flex-wrap gap-2">
+          {
+            games.map((g) => (
+              <a href={`/juega/prueba?juego=${g.id}`} class="chip" aria-current={g.id === juego ? "page" : undefined}>
+                {g.name}
+              </a>
+            ))
+          }
+        </nav>
+        <p class="mt-4 hidden max-w-[34ch] text-sm text-ink-soft lg:block">
+          Versión de prueba: juega todas las veces que quieras. Con un COIN de tu compra, tu mejor puntaje entra a la tabla del mes.
+        </p>
+      </div>
+      <div class="min-w-0">{juego === "casa" ? <CasaGame client:load /> : <LluviaGame client:load />}</div>
+    </div>
+  </section>
+</Site>

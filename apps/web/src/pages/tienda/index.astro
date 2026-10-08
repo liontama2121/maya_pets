@@ -1,0 +1,205 @@
+---
+import { catalogQuery } from "@maya/api/schemas";
+import { listBrands, listCategories, listProducts } from "@maya/api";
+import { Funnel } from "@phosphor-icons/react/dist/ssr/Funnel";
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { ProductCard } from "../../components/shared/ProductCard";
+import Site from "../../layouts/Site.astro";
+import { envOf } from "../../lib/server";
+
+const { DB } = envOf(Astro);
+const params = Object.fromEntries(Astro.url.searchParams);
+const parsed = catalogQuery.safeParse(params);
+const q = parsed.success ? parsed.data : catalogQuery.parse({});
+
+const [result, categories, brands] = await Promise.all([listProducts(DB, q), listCategories(DB), listBrands(DB)]);
+const category = categories.find((c) => c.slug === q.categoria);
+
+const especieLabel = q.especie === "perro" ? "para perros" : q.especie === "gato" ? "para gatos" : "";
+const heading = category ? `${category.name} ${especieLabel}`.trim() : especieLabel ? `Todo ${especieLabel}` : "Tienda";
+
+/** Construye un enlace conservando los filtros actuales. */
+function link(changes: Record<string, string | number | undefined>) {
+  const next = new URLSearchParams();
+  const merged: Record<string, unknown> = { ...q, ...changes };
+  for (const [k, v] of Object.entries(merged)) {
+    if (v === undefined || v === "" || v === null) continue;
+    if (k === "orden" && v === "destacados") continue;
+    if (k === "pagina" && Number(v) === 1) continue;
+    next.set(k, String(v));
+  }
+  const s = next.toString();
+  return s ? `/tienda?${s}` : "/tienda";
+}
+
+const activeFilters = [
+  q.especie && { label: q.especie === "perro" ? "Perros" : "Gatos", href: link({ especie: undefined, pagina: 1 }) },
+  category && { label: category.name, href: link({ categoria: undefined, pagina: 1 }) },
+  q.marca && { label: q.marca, href: link({ marca: undefined, pagina: 1 }) },
+  (q.min != null || q.max != null) && { label: "Precio", href: link({ min: undefined, max: undefined, pagina: 1 }) },
+  q.q && { label: `“${q.q}”`, href: link({ q: undefined, pagina: 1 }) },
+].filter(Boolean) as { label: string; href: string }[];
+
+const sorts = [
+  ["destacados", "Recomendados"],
+  ["precio-asc", "Menor precio"],
+  ["precio-desc", "Mayor precio"],
+  ["nuevos", "Lo más nuevo"],
+] as const;
+---
+
+<Site
+  title={`${heading} en Bogotá`}
+  description={`${heading}: alimento, collares, correas, platos, snacks y premios con stock visible. Envío en Bogotá o recoge en tienda.`}
+>
+  <div class="on-field bg-[var(--field)] text-white">
+    <div class="mx-auto max-w-[1280px] px-4 pb-10 pt-10 sm:px-6">
+      <h1 class="text-4xl font-bold [font-variation-settings:'wght'_740] first-letter:uppercase sm:text-5xl">{heading}</h1>
+      <form method="get" action="/tienda" class="mt-6 flex max-w-xl gap-2" role="search">
+        {q.especie && <input type="hidden" name="especie" value={q.especie} />}
+        {q.categoria && <input type="hidden" name="categoria" value={q.categoria} />}
+        <label for="buscar" class="sr-only">Buscar productos</label>
+        <div class="relative flex-1">
+          <MagnifyingGlass size={20} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-soft" aria-hidden="true" />
+          <input
+            id="buscar"
+            name="q"
+            type="search"
+            value={q.q ?? ""}
+            placeholder="Concentrado, arnés, premios…"
+            class="field !rounded-full pl-11"
+            autocomplete="off"
+          />
+        </div>
+        <button class="btn btn-sun">Buscar</button>
+      </form>
+      <nav aria-label="Especie" class="mt-6 flex flex-wrap gap-2">
+        <a href={link({ especie: undefined, pagina: 1 })} class="chip" aria-current={!q.especie ? "page" : undefined}>Todo</a>
+        <a href={link({ especie: "perro", pagina: 1 })} class="chip" aria-current={q.especie === "perro" ? "page" : undefined}>Perros</a>
+        <a href={link({ especie: "gato", pagina: 1 })} class="chip" aria-current={q.especie === "gato" ? "page" : undefined}>Gatos</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="mx-auto grid max-w-[1280px] gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[260px_1fr]">
+    <!-- Filtros: hoja plegable en celular, columna en escritorio -->
+    <details class="filters group self-start rounded-[var(--radius-toy)] bg-white p-4 lg:sticky lg:top-[92px]" open>
+      <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 font-semibold lg:hidden [&::-webkit-details-marker]:hidden">
+        <Funnel size={20} aria-hidden="true" /> Filtrar
+        {activeFilters.length > 0 && <span class="tnum rounded-full bg-teal-700 px-2 text-sm text-white">{activeFilters.length}</span>}
+      </summary>
+      <form method="get" action="/tienda" class="mt-4 space-y-6 lg:mt-0">
+        {q.especie && <input type="hidden" name="especie" value={q.especie} />}
+        {q.q && <input type="hidden" name="q" value={q.q} />}
+
+        <fieldset>
+          <legend class="label">Categoría</legend>
+          <div class="flex flex-wrap gap-2">
+            <label class="chip cursor-pointer">
+              <input type="radio" name="categoria" value="" checked={!q.categoria} class="sr-only" /> Todas
+            </label>
+            {
+              categories.map((c) => (
+                <label class="chip cursor-pointer">
+                  <input type="radio" name="categoria" value={c.slug} checked={q.categoria === c.slug} class="sr-only" />
+                  {c.name}
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="marca" class="label">Marca</label>
+          <select id="marca" name="marca" class="field">
+            <option value="">Todas las marcas</option>
+            {brands.map((b) => <option value={b} selected={q.marca === b}>{b}</option>)}
+          </select>
+        </div>
+
+        <fieldset>
+          <legend class="label">Precio (COP)</legend>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="min" class="sr-only">Precio mínimo</label>
+              <input id="min" name="min" type="number" inputmode="numeric" min="0" step="1000" placeholder="Desde" value={q.min ?? ""} class="field tnum" />
+            </div>
+            <div>
+              <label for="max" class="sr-only">Precio máximo</label>
+              <input id="max" name="max" type="number" inputmode="numeric" min="0" step="1000" placeholder="Hasta" value={q.max ?? ""} class="field tnum" />
+            </div>
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="orden" class="label">Ordenar</label>
+          <select id="orden" name="orden" class="field">
+            {sorts.map(([v, l]) => <option value={v} selected={q.orden === v}>{l}</option>)}
+          </select>
+        </div>
+
+        <button class="btn btn-teal w-full">Aplicar filtros</button>
+      </form>
+    </details>
+
+    <section aria-labelledby="resultados">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 id="resultados" class="mr-2 text-ink-soft">
+          <span class="tnum font-semibold text-ink">{result.total}</span>
+          {result.total === 1 ? " producto" : " productos"}
+        </h2>
+        {
+          activeFilters.map((f) => (
+            <a href={f.href} class="chip !min-h-9 text-sm" aria-label={`Quitar filtro ${f.label}`}>
+              {f.label} <span aria-hidden="true">×</span>
+            </a>
+          ))
+        }
+        {activeFilters.length > 1 && <a href="/tienda" class="text-sm font-semibold text-teal-700 underline">Quitar todos</a>}
+      </div>
+
+      {
+        result.items.length === 0 ? (
+          <div class="mt-10 flex flex-col items-center rounded-[var(--radius-toy)] bg-white px-6 py-16 text-center">
+            <PawPrint weight="fill" size={52} className="text-teal-400" aria-hidden="true" />
+            <p class="mt-4 text-xl font-semibold">Maya olfateó todo y no encontró nada así.</p>
+            <p class="mt-2 max-w-md text-ink-soft">Prueba con otra palabra o quita algún filtro. Si buscas algo puntual, escríbenos y lo conseguimos.</p>
+            <a href="/tienda" class="btn btn-teal mt-6">Ver toda la tienda</a>
+          </div>
+        ) : (
+          <ul class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 xl:grid-cols-4">
+            {result.items.map((p, i) => (
+              <li>
+                <ProductCard product={p} priority={i < 4} />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        result.pages > 1 && (
+          <nav aria-label="Páginas" class="mt-12 flex items-center justify-center gap-2">
+            {q.pagina > 1 && <a class="btn btn-soft btn-sm" href={link({ pagina: q.pagina - 1 })} rel="prev">Anterior</a>}
+            <span class="tnum px-3 text-ink-soft">Página {q.pagina} de {result.pages}</span>
+            {q.pagina < result.pages && <a class="btn btn-soft btn-sm" href={link({ pagina: q.pagina + 1 })} rel="next">Siguiente</a>}
+          </nav>
+        )
+      }
+    </section>
+  </div>
+</Site>
+
+<script>
+  // En celular los filtros arrancan plegados; en escritorio siempre abiertos.
+  const filters = document.querySelector<HTMLDetailsElement>("details.filters");
+  const mq = window.matchMedia("(min-width: 1024px)");
+  const sync = () => filters && (filters.open = mq.matches);
+  sync();
+  mq.addEventListener("change", sync);
+  // Elegir categoría aplica de inmediato.
+  filters?.querySelectorAll<HTMLInputElement>('input[name="categoria"]').forEach((r) =>
+    r.addEventListener("change", () => r.form?.requestSubmit()),
+  );
+</script>

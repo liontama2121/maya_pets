@@ -1,0 +1,171 @@
+---
+import { publicKids, type PublicContest } from "@maya/api";
+import { Crown } from "@phosphor-icons/react/dist/ssr/Crown";
+import { Heart } from "@phosphor-icons/react/dist/ssr/Heart";
+import { InstagramLogo } from "@phosphor-icons/react/dist/ssr/InstagramLogo";
+import { PaintBrush } from "@phosphor-icons/react/dist/ssr/PaintBrush";
+import KidsForm from "../../islands/site/KidsForm";
+import Site from "../../layouts/Site.astro";
+import { INSTAGRAM_HANDLE } from "../../lib/format";
+import { envOf } from "../../lib/server";
+
+const contests = await publicKids(envOf(Astro).DB);
+const open = contests.find((c) => c.phase === "inscripciones");
+const voting = contests.filter((c) => c.phase === "votacion");
+const past = contests.filter((c) => c.phase === "cerrado" && c.winner);
+const featured: PublicContest | undefined = open ?? voting[0];
+
+const fmt = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString("es-CO", { day: "numeric", month: "long" });
+---
+
+<Site
+  title="MAYA Kids: concurso de dibujo"
+  description="Concurso de dibujo para niños de MAYA Pets en Bogotá. Inscribe el dibujo, lo publicamos en Instagram y el que tenga más likes gana."
+>
+  <section class="on-accent relative overflow-hidden bg-sun-400 text-teal-900">
+    <PaintBrush
+      weight="duotone"
+      size={260}
+      className="pointer-events-none absolute -bottom-16 -right-10 rotate-12 text-teal-900/10"
+      aria-hidden="true"
+    />
+    <div class="relative mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
+      <h1 class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_780] sm:text-6xl">MAYA Kids</h1>
+      <p class="mt-4 max-w-[46ch] text-xl">
+        Nadie sabe cómo es Maya: es invisible. Por eso le pedimos a los niños que la dibujen como la imaginan. El dibujo con más
+        likes en Instagram gana. Los likes se actualizan solos cada pocas horas.
+      </p>
+      <ol class="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3" aria-label="Cómo participar">
+        <li class="rounded-[var(--radius-toy)] bg-white/70 p-4"><strong>1. Dibuja</strong><br />el tema del concurso, como quieras.</li>
+        <li class="rounded-[var(--radius-toy)] bg-white/70 p-4"><strong>2. Publica en Instagram</strong><br />invitando a @{INSTAGRAM_HANDLE} como colaborador.</li>
+        <li class="rounded-[var(--radius-toy)] bg-white/70 p-4"><strong>3. Inscribe el enlace</strong><br />aquí abajo y consigue likes.</li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6">
+    {
+      featured ? (
+        <section aria-labelledby="concurso" class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div>
+            <h2 id="concurso" class="text-3xl font-bold [font-variation-settings:'wght'_720] sm:text-4xl">
+              {featured.title}
+            </h2>
+            <p class="mt-2 text-xl text-teal-700">Tema: {featured.theme}</p>
+            {featured.description && <p class="mt-4 max-w-[60ch] text-ink-soft">{featured.description}</p>}
+            <dl class="mt-6 grid max-w-md grid-cols-2 gap-3">
+              <div class="rounded-2xl bg-white p-4">
+                <dt class="text-sm text-ink-soft">Premio</dt>
+                <dd class="font-semibold">{featured.prize}</dd>
+              </div>
+              <div class="rounded-2xl bg-white p-4">
+                <dt class="text-sm text-ink-soft">Edades</dt>
+                <dd class="font-semibold">
+                  {featured.ageMin} a {featured.ageMax} años
+                </dd>
+              </div>
+              <div class="rounded-2xl bg-white p-4">
+                <dt class="text-sm text-ink-soft">Inscripciones</dt>
+                <dd class="font-semibold">Hasta el {fmt(featured.endsAt)}</dd>
+              </div>
+              <div class="rounded-2xl bg-white p-4">
+                <dt class="text-sm text-ink-soft">Likes hasta</dt>
+                <dd class="font-semibold">El {fmt(featured.votingEndsAt)}</dd>
+              </div>
+            </dl>
+          </div>
+          {open ? (
+            <KidsForm client:visible contestId={open.id} ageMin={open.ageMin} ageMax={open.ageMax} />
+          ) : (
+            <div class="self-start rounded-[var(--radius-toy)] bg-white p-6">
+              <p class="text-xl font-semibold">Las inscripciones cerraron.</p>
+              <p class="mt-2 text-ink-soft">Ahora es momento de votar: dale like en Instagram al dibujo que más te guste.</p>
+            </div>
+          )}
+        </section>
+      ) : (
+        <section class="rounded-[var(--radius-toy)] bg-white p-8 text-center">
+          <PaintBrush weight="fill" size={48} className="mx-auto text-teal-400" aria-hidden="true" />
+          <h2 class="mt-3 text-2xl font-bold">Pronto abrimos el próximo concurso</h2>
+          <p class="mt-2 text-ink-soft">Síguenos en Instagram para enterarte del tema. Mientras tanto, ¡a practicar!</p>
+        </section>
+      )
+    }
+
+    {
+      [...(featured ? [featured] : []), ...voting.filter((v) => v.id !== featured?.id)]
+        .filter((c) => c.entries.length)
+        .map((c) => (
+          <section class="mt-16" aria-labelledby={`galeria-${c.id}`}>
+            <h2 id={`galeria-${c.id}`} class="text-2xl font-bold [font-variation-settings:'wght'_700]">
+              Dibujos de {c.title}
+            </h2>
+            <p class="mt-1 text-ink-soft">Toca un dibujo para darle like en Instagram.</p>
+            <ul class="mt-6 columns-2 gap-4 sm:columns-3 lg:columns-4 [&>li]:mb-4 [&>li]:break-inside-avoid">
+              {c.entries.map((e) => (
+                <li>
+                  <a
+                    href={e.instagramUrl ?? undefined}
+                    target="_blank"
+                    rel="noopener"
+                    class="group block overflow-hidden rounded-[var(--radius-toy)] bg-white shadow-[0_10px_24px_-16px_rgb(4_42_43/0.5)]"
+                  >
+                    <img
+                      src={e.imageUrl}
+                      alt={`Dibujo de ${e.childName}, ${e.childAge} años${e.drawingTitle ? `: ${e.drawingTitle}` : ""}`}
+                      width={e.width ?? 600}
+                      height={e.height ?? 800}
+                      loading="lazy"
+                      class="w-full transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                    <span class="flex items-center justify-between gap-2 p-3">
+                      <span>
+                        <span class="block font-semibold">
+                          {e.childName}, {e.childAge} años
+                        </span>
+                        {e.drawingTitle && <span class="block text-sm text-ink-soft">{e.drawingTitle}</span>}
+                      </span>
+                      <span class="tnum inline-flex shrink-0 items-center gap-1 rounded-full bg-sun-100 px-2.5 py-1 text-sm font-semibold text-teal-900">
+                        <Heart weight="fill" size={14} aria-hidden="true" /> {e.likes}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+    }
+
+    {
+      past.length > 0 && (
+        <section class="mt-16" aria-labelledby="ganadores">
+          <h2 id="ganadores" class="text-2xl font-bold [font-variation-settings:'wght'_700]">
+            Ganadores
+          </h2>
+          <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {past.map((c) => (
+              <li class="overflow-hidden rounded-[var(--radius-toy)] bg-white">
+                <img src={c.winner!.imageUrl} alt={`Dibujo ganador de ${c.winner!.childName}`} class="aspect-[4/3] w-full object-cover" loading="lazy" />
+                <div class="p-4">
+                  <p class="flex items-center gap-2 font-semibold">
+                    <Crown weight="fill" size={18} className="text-sun-500" aria-hidden="true" /> {c.winner!.childName}, {c.winner!.childAge} años
+                  </p>
+                  <p class="text-sm text-ink-soft">
+                    {c.title} · {c.winner!.likes} likes
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <p class="mt-16 flex flex-wrap items-center gap-2 text-sm text-ink-soft">
+      <InstagramLogo size={18} aria-hidden="true" />
+      Instagram no patrocina ni administra este concurso. Consulta los
+      <a href="/maya-kids/terminos" class="font-semibold text-teal-700 underline">términos</a>.
+    </p>
+  </div>
+</Site>

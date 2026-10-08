@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+.env
+*.log
+.DS_Store
+.impeccable/review/
+.impeccable/config.local.json

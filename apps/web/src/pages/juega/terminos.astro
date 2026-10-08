@@ -1,0 +1,64 @@
+---
+// BORRADOR: debe revisarlo un abogado antes de lanzar el concurso.
+// Completar los datos marcados con [ ] antes de publicar.
+import { getContest, getSettings } from "@maya/api";
+import Site from "../../layouts/Site.astro";
+import { WHATSAPP_DISPLAY } from "../../lib/format";
+import { envOf } from "../../lib/server";
+
+const { DB } = envOf(Astro);
+const [settings, contest] = await Promise.all([getSettings(DB), getContest(DB)]);
+const min = settings.minPurchase.toLocaleString("es-CO");
+---
+
+<Site title="Términos del concurso" description="Términos y condiciones del concurso mensual y la rifa de MAYA Pets." noindex>
+  <article class="mx-auto max-w-2xl px-4 py-12 leading-relaxed sm:px-6 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_li]:mt-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
+    <h1 class="text-4xl font-bold [font-variation-settings:'wght'_740]">Términos del concurso</h1>
+    <p class="text-ink-soft">MAYA Pets, Bogotá, Colombia. Responsable: [razón social y NIT].</p>
+
+    <h2>1. Cómo se participa</h2>
+    <ul>
+      <li>Cada compra desde ${min} en la tienda física o en línea entrega un COIN: un código único que aparece en el recibo o en la confirmación del pedido.</li>
+      <li>Cada COIN da {settings.attemptsPerCoin} intentos en el juego del mes y una boleta para la rifa del mes en que se entregó.</li>
+      <li>El COIN sirve para jugar durante {settings.coinValidDays} días desde que se entrega.</li>
+      <li>Para jugar hay que registrar un apodo, un WhatsApp o correo de contacto y aceptar estos términos y la política de privacidad.</li>
+      <li>La participación no tiene costo adicional a la compra.</li>
+    </ul>
+
+    <h2>2. Concurso del juego (habilidad)</h2>
+    <ul>
+      <li>Gana el COIN con el mayor puntaje válido del mes calendario (hora de Bogotá). En empate gana quien lo logró primero.</li>
+      <li>El puntaje oficial lo calcula nuestro sistema repitiendo la partida. Las partidas manipuladas, automatizadas o que no se puedan validar no cuentan.</li>
+      <li>Premio del mes: {contest.gamePrize}.</li>
+    </ul>
+
+    <h2>3. Rifa (azar)</h2>
+    <ul>
+      <li>Cada COIN entregado en el mes es una boleta. Se sortea una vez terminado el mes, de forma aleatoria entre todas las boletas válidas.</li>
+      <li>Premio de la rifa: {contest.rafflePrize}.</li>
+    </ul>
+
+    <h2>4. Ganadores y entrega</h2>
+    <ul>
+      <li>Contactamos a los ganadores por el WhatsApp o correo registrado en los [5] días hábiles siguientes al cierre del mes.</li>
+      <li>El ganador debe presentar el código del COIN. Si no responde en [15] días, el premio [se declara desierto / pasa al siguiente lugar].</li>
+      <li>El premio no es canjeable por dinero. Si el ganador es menor de edad, lo recibe su madre, padre o acudiente.</li>
+    </ul>
+
+    <h2>5. Restricciones</h2>
+    <ul>
+      <li>No participan empleados de MAYA Pets ni sus familiares en primer grado.</li>
+      <li>MAYA Pets puede anular COIN obtenidos o usados de forma fraudulenta.</li>
+      <li>[Otras restricciones que defina el abogado.]</li>
+    </ul>
+
+    <h2>6. Datos personales</h2>
+    <p>
+      Tratamos tus datos según la <a href="/privacidad" class="font-semibold text-teal-700 underline">política de privacidad</a> y la Ley 1581 de 2012.
+      Solo publicamos tu apodo y tu puntaje.
+    </p>
+
+    <h2>7. Contacto</h2>
+    <p>WhatsApp {WHATSAPP_DISPLAY}. [Correo de contacto].</p>
+  </article>
+</Site>

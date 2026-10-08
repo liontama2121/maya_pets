@@ -1,0 +1,29 @@
+---
+/**
+ * Logo de MAYA Pets, usado tal cual (sin redibujar ni recolorear).
+ * Archivos generados por scripts/prepare-logos.mjs a partir de los originales entregados.
+ *   - "letras": letras blancas y amarillas sobre fondo transparente (para fondos verdes).
+ *   - "circulo": la insignia circular verde completa (para fondos claros).
+ */
+interface Props {
+  class?: string;
+  height?: number;
+  eager?: boolean;
+  variant?: "letras" | "circulo";
+}
+const { class: className = "", height = 44, eager = false, variant = "letras" } = Astro.props;
+const src = variant === "circulo" ? "/brand/maya-logo-circle.png" : height > 56 ? "/brand/maya-logo-lg.png" : "/brand/maya-logo.png";
+const ratio = variant === "circulo" ? 1 : 485 / 240;
+---
+
+<img
+  src={src}
+  alt="MAYA Pets, mi mascota, mi familia"
+  width={Math.round(height * ratio)}
+  height={height}
+  class:list={["block h-auto max-w-full select-none", className]}
+  style={`height:${height}px;width:auto`}
+  loading={eager ? "eager" : "lazy"}
+  decoding="async"
+  draggable="false"
+/>

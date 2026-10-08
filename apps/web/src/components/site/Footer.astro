@@ -1,0 +1,48 @@
+---
+import { Heart } from "@phosphor-icons/react/dist/ssr/Heart";
+import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
+import { WHATSAPP_DISPLAY, whatsappLink } from "../../lib/format";
+import Logo from "./Logo.astro";
+
+const year = new Date().getFullYear();
+---
+
+<footer id="contacto" class="on-field mt-24 bg-[var(--field)] text-white">
+  <div class="rope mx-auto -mt-[5px] max-w-[1280px] rounded-none sm:rounded-full" aria-hidden="true"></div>
+  <div class="mx-auto grid max-w-[1280px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.3fr_1fr_1fr]">
+    <div class="max-w-sm">
+      <Logo height={84} />
+      <p class="mt-2 text-white/80">Tienda para perros y gatos en Bogotá, con perritos que buscan hogar.</p>
+    </div>
+
+    <nav aria-label="Pie de página">
+      <h2 class="text-base font-semibold text-white">Explora</h2>
+      <ul class="mt-3 space-y-1">
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/tienda?especie=perro">Para perros</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/tienda?especie=gato">Para gatos</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/adopta">Adopta con Maya</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/juega">Juega con tu COIN</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/maya-kids">MAYA Kids</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/nosotros">La historia de Maya</a></li>
+        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/privacidad">Privacidad</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="text-base font-semibold text-white">Escríbenos</h2>
+      <p class="mt-3 text-white/80">Respondemos por WhatsApp. Dirección y horario de la tienda: muy pronto.</p>
+      <a href={whatsappLink()} target="_blank" rel="noopener" class="btn btn-sun mt-4">
+        <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
+        {WHATSAPP_DISPLAY}
+      </a>
+    </div>
+  </div>
+  <div class="border-t border-white/15">
+    <div class="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-3 px-4 py-5 text-sm text-white/80 sm:px-6">
+      <p>© {year} MAYA Pets. Bogotá, Colombia.</p>
+      <p class="inline-flex items-center gap-1.5">
+        Hecho con amor por JuanCode <Heart weight="fill" size={16} className="text-[var(--accent)]" aria-hidden="true" />
+      </p>
+    </div>
+  </div>
+</footer>

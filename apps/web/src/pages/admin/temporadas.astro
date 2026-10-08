@@ -1,0 +1,26 @@
+---
+import { hasRole } from "@maya/api";
+import SeasonsManager, { type AdminSeason } from "../../islands/admin/SeasonsManager";
+import Admin from "../../layouts/Admin.astro";
+import { adminFetch } from "../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!)) return Astro.redirect("/admin");
+const [seasons, categories] = await Promise.all([
+  adminFetch<AdminSeason[]>(Astro, "/seasons"),
+  adminFetch<{ slug: string; name: string; active: boolean }[]>(Astro, "/categories"),
+]);
+---
+
+<Admin title="Temporadas">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Temporadas</h1>
+  <p class="mt-1 max-w-2xl text-ink-soft">
+    Elige las fechas y la tienda se viste sola: colores, banner del inicio, productos de la temporada y decoración.
+  </p>
+  <div class="mt-6">
+    <SeasonsManager
+      client:load
+      initial={seasons}
+      categories={categories.filter((c) => c.active).map(({ slug, name }) => ({ slug, name }))}
+    />
+  </div>
+</Admin>

@@ -1,0 +1,19 @@
+---
+import { getSettings, hasRole, monthInBogota } from "@maya/api";
+import CoinsManager from "../../islands/admin/CoinsManager";
+import Admin from "../../layouts/Admin.astro";
+import { envOf } from "../../lib/server";
+
+const staff = Astro.locals.staff!;
+if (!hasRole(staff, "vendedor")) return Astro.redirect("/admin");
+const settings = await getSettings(envOf(Astro).DB);
+const site = Astro.url.origin;
+---
+
+<Admin title="Entregar COIN">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">COIN</h1>
+  <p class="mt-1 max-w-2xl text-ink-soft">Cada compra desde el mínimo recibe un código: intentos en el juego del mes y una boleta para la rifa.</p>
+  <div class="mt-6">
+    <CoinsManager client:load minPurchase={settings.minPurchase} isAdmin={hasRole(staff)} month={monthInBogota()} siteUrl={site} />
+  </div>
+</Admin>

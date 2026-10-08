@@ -1,0 +1,32 @@
+---
+// BORRADOR de política de tratamiento de datos (Ley 1581 de 2012, Decreto 1377 de 2013).
+// Debe revisarla un abogado y completar los datos marcados con [ ] antes de publicar.
+import Site from "../layouts/Site.astro";
+import { WHATSAPP_DISPLAY } from "../lib/format";
+---
+
+<Site title="Política de privacidad" description="Política de tratamiento de datos personales de MAYA Pets (Ley 1581 de 2012)." noindex>
+  <article class="mx-auto max-w-2xl px-4 py-12 leading-relaxed sm:px-6 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-bold [&_li]:mt-2 [&_p]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
+    <h1 class="text-4xl font-bold [font-variation-settings:'wght'_740]">Política de privacidad</h1>
+    <p class="text-ink-soft">Responsable: [razón social], NIT [ ], Bogotá, Colombia. Contacto: WhatsApp {WHATSAPP_DISPLAY}, [correo].</p>
+
+    <h2>Qué datos recogemos y para qué</h2>
+    <ul>
+      <li><strong>Compras:</strong> nombre, contacto y dirección de entrega, para procesar y enviar tu pedido.</li>
+      <li><strong>Concurso y rifa:</strong> apodo, WhatsApp o correo y puntajes, para administrar el concurso y avisarte si ganas. En público solo mostramos tu apodo y tu puntaje.</li>
+      <li><strong>Adopción:</strong> los datos de la solicitud, para evaluar la adopción y contactarte.</li>
+    </ul>
+
+    <h2>Tus derechos</h2>
+    <p>
+      Puedes conocer, actualizar, rectificar y pedir que eliminemos tus datos, revocar la autorización y presentar quejas ante la
+      Superintendencia de Industria y Comercio. Escríbenos por WhatsApp o al correo [ ] y respondemos en los plazos de ley.
+    </p>
+
+    <h2>Menores de edad</h2>
+    <p>Si eres menor de edad, participa con la autorización de tu madre, padre o acudiente.</p>
+
+    <h2>Cuánto tiempo guardamos los datos</h2>
+    <p>[Definir plazos con el abogado: por ejemplo, datos del concurso hasta [12] meses después de entregado el premio.]</p>
+  </article>
+</Site>

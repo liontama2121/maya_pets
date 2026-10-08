@@ -1,0 +1,25 @@
+---
+import JuegaCoin from "../../islands/site/JuegaCoin";
+import Site from "../../layouts/Site.astro";
+---
+
+<Site
+  title="Juega y gana con tu COIN"
+  description="Con cada compra en MAYA Pets recibes un COIN: 3 intentos para el juego del mes y una boleta para la rifa. El mejor puntaje del mes gana un regalo sorpresa."
+>
+  <section class="on-field bg-[var(--field)] text-white">
+    <div class="mx-auto max-w-[1280px] px-4 py-10 sm:px-6 md:py-14">
+      <h1 class="text-4xl font-bold leading-tight [font-variation-settings:'wght'_760] sm:text-5xl">Juega y gana con tu COIN</h1>
+      <p class="mt-3 max-w-[52ch] text-lg text-white/90">
+        Cada compra te da un COIN: 3 intentos para superar a los demás en el juego del mes y una boleta para la rifa. El mejor
+        puntaje se lleva un regalo sorpresa.
+      </p>
+    </div>
+  </section>
+  <section class="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 sm:py-12">
+    <JuegaCoin client:load />
+    <p class="mt-10 text-sm text-ink-soft">
+      Participación sujeta a los <a href="/juega/terminos" class="font-semibold text-teal-700 underline">términos del concurso</a>.
+    </p>
+  </section>
+</Site>

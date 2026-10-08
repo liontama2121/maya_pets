@@ -1,0 +1,17 @@
+---
+import { hasRole } from "@maya/api";
+import StaffManager, { type StaffRow } from "../../islands/admin/StaffManager";
+import Admin from "../../layouts/Admin.astro";
+import { adminFetch } from "../../lib/admin-server";
+
+const staff = Astro.locals.staff!;
+if (!hasRole(staff)) return Astro.redirect("/admin");
+const rows = await adminFetch<StaffRow[]>(Astro, "/staff");
+---
+
+<Admin title="Equipo">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Equipo</h1>
+  <div class="mt-4">
+    <StaffManager client:load initial={rows} meId={staff.id} />
+  </div>
+</Admin>

@@ -1,0 +1,48 @@
+---
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
+import Site from "../../layouts/Site.astro";
+import { whatsappLink } from "../../lib/format";
+
+// Provisional: la galería, los filtros y el recorrido con Maya llegan en la fase de adopción.
+---
+
+<Site
+  title="Adopta con Maya"
+  description="Perritos en adopción en Bogotá. Maya te ayuda a encontrar el que encaja con tu hogar."
+>
+  <section class="on-accent bg-sun-400 text-teal-900">
+    <div class="mx-auto grid max-w-[1280px] gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.2fr_1fr] md:items-center md:py-24">
+      <div>
+        <h1 class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_760] sm:text-6xl">Adopta con Maya</h1>
+        <p class="mt-5 max-w-[44ch] text-xl">
+          Estamos preparando la galería de perritos que buscan familia. Mientras tanto, escríbenos y te contamos quiénes están
+          esperando hogar.
+        </p>
+        <a
+          href={whatsappLink("Hola MAYA Pets, quiero adoptar. ¿Qué perritos tienen en adopción?")}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-teal mt-8 text-lg"
+        >
+          <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
+          Quiero adoptar
+        </a>
+      </div>
+      <ol class="space-y-4 text-lg" aria-label="Cómo funciona">
+        <li class="flex gap-4 rounded-[var(--radius-toy)] bg-white/70 p-5">
+          <PawPrint weight="fill" size={28} className="shrink-0 text-teal-700" aria-hidden="true" />
+          <span><strong>Cuéntanos de tu hogar.</strong> Espacio, tiempo en casa y otras mascotas.</span>
+        </li>
+        <li class="flex gap-4 rounded-[var(--radius-toy)] bg-white/70 p-5">
+          <PawPrint weight="fill" size={28} className="shrink-0 rotate-12 text-teal-700" aria-hidden="true" />
+          <span><strong>Maya te sugiere perritos</strong> que encajan con tu ritmo.</span>
+        </li>
+        <li class="flex gap-4 rounded-[var(--radius-toy)] bg-white/70 p-5">
+          <PawPrint weight="fill" size={28} className="shrink-0 -rotate-12 text-teal-700" aria-hidden="true" />
+          <span><strong>Se conocen</strong> y, si hay química, empieza la vida juntos.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+</Site>

@@ -1,0 +1,289 @@
+---
+import { featuredProducts, listCategories, liveSeason } from "@maya/api";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { Cat } from "@phosphor-icons/react/dist/ssr/Cat";
+import { Dog } from "@phosphor-icons/react/dist/ssr/Dog";
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { ProductCard } from "../components/shared/ProductCard";
+import { SeasonBanner } from "../components/shared/SeasonBanner";
+import Site from "../layouts/Site.astro";
+import { envOf } from "../lib/server";
+
+const { DB } = envOf(Astro);
+const [season, featured, categories] = await Promise.all([liveSeason(DB), featuredProducts(DB, 8), listCategories(DB)]);
+const seasonProducts = season?.products ?? [];
+const dogCats = categories.filter((c) => c.species !== "gato");
+const catCats = categories.filter((c) => c.species !== "perro");
+---
+
+<Site
+  title="MAYA Pets | Tienda para perros y gatos en Bogotá"
+  description="Alimento, collares, correas, platos, snacks y premios para tu perro o gato en Bogotá. Y perritos en adopción que buscan familia."
+  season={season}
+>
+  <!-- Hero: Maya es invisible. Solo se ven su sombra y sus huellas; sigue al cursor. -->
+  <section class="on-field relative overflow-hidden bg-[var(--field)] text-white" data-hero>
+    <div
+      class="relative z-10 mx-auto grid min-h-[min(640px,calc(100dvh-68px))] max-w-[1280px] items-center gap-4 px-4 py-12 sm:px-6 md:grid-cols-[1.1fr_1fr] md:py-16"
+    >
+      <div class="max-w-xl">
+        <h1
+          data-enter
+          class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_760] sm:text-6xl lg:text-7xl"
+        >
+          Mi mascota, <span class="text-[var(--accent)]">mi familia</span>
+        </h1>
+        <p data-enter class="mt-5 max-w-md text-lg text-white/90 sm:text-xl">
+          Comida, paseos y premios para tu perro o gato. Y perritos que buscan una familia como la tuya.
+        </p>
+        <div data-enter class="mt-8 flex flex-wrap gap-3">
+          <a href="/tienda" class="btn btn-sun text-lg">Ver la tienda</a>
+          <a href="/adopta" class="btn btn-ghost-light text-lg">
+            <PawPrint weight="fill" size={20} aria-hidden="true" />
+            Adopta con Maya
+          </a>
+        </div>
+      </div>
+      <!-- Donde Maya descansa al cargar -->
+      <div data-maya-home class="h-[220px] md:h-[420px]" aria-hidden="true"></div>
+    </div>
+
+    <!-- Capa de Maya: decorativa, no bloquea clics -->
+    <div class="pointer-events-none absolute inset-0 z-20" aria-hidden="true">
+      <div data-maya-trail class="absolute inset-0 text-[var(--accent)]"></div>
+      <div data-maya-body class="maya-body absolute left-0 top-0">
+        <span data-maya-shadow class="maya-shadow"></span>
+        <span class="maya-sit text-[var(--accent)]">
+          <PawPrint weight="fill" size={26} />
+          <PawPrint weight="fill" size={26} />
+        </span>
+        <span data-maya-bubble data-show="false" class="maya-bubble"></span>
+      </div>
+    </div>
+    <p class="sr-only">Maya, la perrita invisible de la tienda, camina por aquí. Solo se ven su sombra y sus huellas.</p>
+  </section>
+
+  <!-- Perros / Gatos -->
+  <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-labelledby="especies">
+    <h2 id="especies" class="max-w-xl text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
+      ¿Quién te espera en casa?
+    </h2>
+    <div class="mt-8 grid gap-5 md:grid-cols-[1.4fr_1fr]">
+      <a
+        href="/tienda?especie=perro"
+        class="toy group relative flex min-h-[300px] flex-col justify-between overflow-hidden bg-teal-100 p-6 sm:p-8"
+      >
+        <Dog
+          weight="duotone"
+          size={220}
+          className="pointer-events-none absolute -bottom-6 -right-4 text-teal-700 transition-transform duration-500 ease-[var(--ease-squish)] group-hover:-rotate-6 group-hover:scale-105"
+          aria-hidden="true"
+        />
+        <div>
+          <h3 class="text-4xl font-bold text-teal-900 [font-variation-settings:'wght'_720]">Perros</h3>
+          <p class="mt-2 max-w-[28ch] text-ink-soft">Del cachorro inquieto al abuelo que ya solo quiere sofá.</p>
+        </div>
+        <ul class="relative mt-6 flex max-w-[70%] flex-wrap gap-2" aria-label="Categorías para perros">
+          {dogCats.map((c) => <li class="rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-teal-900">{c.name}</li>)}
+        </ul>
+        <span class="relative mt-6 inline-flex items-center gap-2 font-semibold text-teal-900">
+          Ver todo para perros
+          <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+        </span>
+      </a>
+
+      <a
+        href="/tienda?especie=gato"
+        class="toy group relative flex min-h-[300px] flex-col justify-between overflow-hidden bg-sun-100 p-6 sm:p-8"
+      >
+        <Cat
+          weight="duotone"
+          size={190}
+          className="pointer-events-none absolute -bottom-4 -right-2 text-sun-600 transition-transform duration-500 ease-[var(--ease-squish)] group-hover:rotate-6 group-hover:scale-105"
+          aria-hidden="true"
+        />
+        <div>
+          <h3 class="text-4xl font-bold text-teal-900 [font-variation-settings:'wght'_720]">Gatos</h3>
+          <p class="mt-2 max-w-[24ch] text-ink-soft">Para los que mandan en la casa y lo saben.</p>
+        </div>
+        <ul class="relative mt-6 flex max-w-[70%] flex-wrap gap-2" aria-label="Categorías para gatos">
+          {catCats.map((c) => <li class="rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-teal-900">{c.name}</li>)}
+        </ul>
+        <span class="relative mt-6 inline-flex items-center gap-2 font-semibold text-teal-900">
+          Ver todo para gatos
+          <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+        </span>
+      </a>
+    </div>
+  </section>
+
+  {
+    season && (
+      <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-label={`Colección de ${season.preset.name}`}>
+        <SeasonBanner
+          preset={season.preset}
+          data={{
+            headline: season.event.headline,
+            message: season.event.message,
+            ctaLabel: season.event.ctaLabel,
+            categorySlug: season.event.categorySlug,
+            discountNote: season.event.discountNote,
+          }}
+        />
+        {seasonProducts.length > 0 && (
+          <ul class="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
+            {seasonProducts.slice(0, 4).map((p) => (
+              <li>
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    )
+  }
+
+  <!-- Lo que más se llevan -->
+  <section class="pt-16 md:pt-24" aria-labelledby="destacados">
+    <div class="mx-auto flex max-w-[1280px] items-end justify-between gap-4 px-4 sm:px-6">
+      <h2 id="destacados" class="text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">Lo que más se llevan</h2>
+      <a href="/tienda" class="hidden shrink-0 font-semibold text-teal-700 hover:underline sm:inline">Ver toda la tienda</a>
+    </div>
+    <ul
+      class="mx-auto mt-8 flex max-w-[1280px] snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:thin] sm:px-6 lg:grid lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 lg:overflow-visible"
+    >
+      {
+        featured.map((p, i) => (
+          <li class="w-[68%] shrink-0 snap-start sm:w-[42%] lg:w-auto">
+            <ProductCard product={p} priority={i < 2} />
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mx-auto mt-2 max-w-[1280px] px-4 sm:hidden">
+      <a href="/tienda" class="btn btn-soft w-full">Ver toda la tienda</a>
+    </div>
+  </section>
+
+  <!-- Adopción: la sección más importante -->
+  <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-labelledby="adopta">
+    <div class="on-accent toy relative overflow-hidden bg-[var(--color-sun-400)] px-6 py-12 text-teal-900 sm:px-12 sm:py-16">
+      <div class="paw-walk pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block" aria-hidden="true">
+        {
+          Array.from({ length: 7 }, (_, i) => (
+            <PawPrint
+              weight="fill"
+              size={34}
+              className="absolute text-teal-900/15"
+              style={{ left: `${12 + i * 12}%`, top: `${70 - i * 9 + (i % 2) * 8}%`, transform: `rotate(${35 + (i % 2 ? 10 : -10)}deg)` }}
+            />
+          ))
+        }
+      </div>
+      <div class="relative max-w-2xl">
+        <h2 id="adopta" class="text-4xl font-bold leading-[1.05] [font-variation-settings:'wght'_760] sm:text-5xl">
+          Adopta con Maya
+        </h2>
+        <p class="mt-4 max-w-[46ch] text-lg sm:text-xl">
+          Maya es una perrita imaginaria. Los perritos que te presenta son muy reales y esperan una familia. Ella te
+          ayuda a encontrar el que encaja con tu casa.
+        </p>
+        <a href="/adopta" class="btn btn-teal mt-8 text-lg">
+          Conoce a los perritos
+          <ArrowRight weight="bold" size={20} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- La historia -->
+  <section class="mx-auto max-w-3xl px-4 pt-20 text-center sm:px-6 md:pt-28" aria-labelledby="historia">
+    <PawPrint weight="fill" size={36} className="mx-auto text-teal-700" aria-hidden="true" />
+    <h2 id="historia" class="mt-4 text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
+      Una perrita que solo una niña podía ver
+    </h2>
+    <p class="mx-auto mt-4 max-w-[52ch] text-lg text-ink-soft">
+      Maya nació en la imaginación de la hija de los fundadores. Nadie más la veía, pero todos sabían cuándo había pasado
+      por ahí. Así nació la tienda: para que cada mascota tenga lo que necesita y cada perrito, una familia.
+    </p>
+    <a href="/nosotros" class="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-teal-700 hover:underline">
+      Leer la historia de Maya
+      <ArrowRight weight="bold" size={18} aria-hidden="true" />
+    </a>
+  </section>
+</Site>
+
+<style>
+  /* La sombra de un perro sentado: lo único visible de Maya. */
+  .maya-body {
+    width: 0;
+    height: 0;
+  }
+  .maya-shadow {
+    position: absolute;
+    left: -64px;
+    top: -14px;
+    width: 128px;
+    height: 28px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0.28) 60%, transparent);
+    filter: blur(2px);
+  }
+  .maya-sit {
+    position: absolute;
+    left: -34px;
+    top: -18px;
+    display: flex;
+    gap: 16px;
+    transition:
+      opacity 220ms var(--ease-out-expo),
+      transform 220ms var(--ease-out-expo);
+  }
+  .maya-body[data-walking="true"] .maya-sit {
+    opacity: 0;
+    transform: translateY(4px) scale(0.8);
+  }
+  .maya-bubble {
+    position: absolute;
+    left: -24px;
+    bottom: 34px;
+    width: max-content;
+    max-width: min(240px, 60vw);
+    padding: 10px 16px 12px;
+    border-radius: 20px 20px 20px 6px;
+    background: #fff;
+    color: var(--color-teal-900);
+    font-weight: 500;
+    line-height: 1.3;
+    box-shadow:
+      inset 0 -3px 0 var(--color-teal-100),
+      0 14px 24px -12px rgb(0 0 0 / 0.5);
+    transform-origin: 12px 100%;
+    transition:
+      opacity 260ms var(--ease-out-expo),
+      transform 320ms var(--ease-squish);
+  }
+  .maya-bubble[data-show="false"] {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85);
+  }
+  :global(.maya-step) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    opacity: 0;
+  }
+</style>
+
+<script>
+  import { heroEntrance, initMayaFollow } from "../motion/maya";
+  const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const home = document.querySelector<HTMLElement>("[data-maya-home]");
+  const body = document.querySelector<HTMLElement>("[data-maya-body]");
+  const trail = document.querySelector<HTMLElement>("[data-maya-trail]");
+  const bubble = document.querySelector<HTMLElement>("[data-maya-bubble]");
+  if (hero) heroEntrance(hero);
+  if (hero && home && body && trail && bubble) initMayaFollow({ zone: hero, home, body, trail, bubble });
+</script>
