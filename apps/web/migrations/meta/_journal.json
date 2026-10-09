@@ -29,6 +29,13 @@
       "when": 1791430462014,
       "tag": "0003_kids_likes_sync",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1791508936970,
+      "tag": "0004_login_attempts",
+      "breakpoints": true
     }
   ]
 }

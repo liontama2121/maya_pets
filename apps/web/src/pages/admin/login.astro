@@ -1,0 +1,32 @@
+---
+import "../../styles/global.css";
+import Logo from "../../components/site/Logo.astro";
+import LoginForm from "../../islands/admin/LoginForm";
+
+const next = Astro.url.searchParams.get("volver") ?? "/admin";
+---
+
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Entrar · Panel MAYA Pets</title>
+    <link rel="icon" href="/brand/favicon.png" type="image/png" />
+  </head>
+  <body class="on-field grid min-h-dvh place-items-center bg-teal-700 px-4 py-10">
+    <main class="w-full max-w-sm">
+      <div class="mb-6 flex justify-center">
+        <Logo height={72} eager />
+      </div>
+      <div class="rounded-[var(--radius-toy)] bg-white p-6 text-ink shadow-[inset_0_-5px_0_var(--color-teal-100),0_24px_48px_-24px_rgb(0_0_0/0.5)]">
+        <h1 class="mb-5 text-2xl font-bold [font-variation-settings:'wght'_720]">Panel de MAYA Pets</h1>
+        <LoginForm client:load next={next} />
+      </div>
+      <p class="mt-6 text-center">
+        <a href="/" class="font-medium text-white/90 hover:underline">Volver a la tienda</a>
+      </p>
+    </main>
+  </body>
+</html>

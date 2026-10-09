@@ -9,8 +9,8 @@ import { Trophy } from "@phosphor-icons/react/dist/ssr/Trophy";
 import { Package } from "@phosphor-icons/react/dist/ssr/Package";
 import { SquaresFour } from "@phosphor-icons/react/dist/ssr/SquaresFour";
 import { Storefront } from "@phosphor-icons/react/dist/ssr/Storefront";
-import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree";
 import Logo from "../components/site/Logo.astro";
+import LogoutButton from "../islands/admin/LogoutButton";
 
 interface Props {
   title: string;
@@ -27,7 +27,6 @@ const nav = [
   { href: "/admin/temporadas", label: "Temporadas", Icon: CalendarStar, show: hasRole(staff) },
   { href: "/admin/concurso", label: "Concurso", Icon: Trophy, show: hasRole(staff) },
   { href: "/admin/kids", label: "MAYA Kids", Icon: PaintBrush, show: hasRole(staff) },
-  { href: "/admin/equipo", label: "Equipo", Icon: UsersThree, show: hasRole(staff) },
 ].filter((n) => n.show);
 
 const isCurrent = (href: string, exact = false) => (exact ? path === href : path === href || path.startsWith(`${href}/`));
@@ -51,9 +50,12 @@ const roleLabel = staff.roles.includes("admin") ? "Administradora" : staff.roles
       <aside class="on-field bg-teal-700 text-white shadow-[inset_-4px_0_0_var(--color-teal-900)] lg:sticky lg:top-0 lg:h-dvh">
         <div class="flex h-16 items-center justify-between gap-3 px-4 lg:h-20 lg:px-5">
           <a href="/admin" class="rounded-xl" aria-label="Panel de MAYA Pets, inicio"><Logo height={44} eager /></a>
-          <a href="/" class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-medium hover:bg-white/10 lg:hidden">
-            <Storefront size={18} aria-hidden="true" /> Tienda
-          </a>
+          <div class="flex items-center gap-1 lg:hidden">
+            <a href="/" class="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-medium hover:bg-white/10">
+              <Storefront size={18} aria-hidden="true" /> Tienda
+            </a>
+            <LogoutButton client:idle />
+          </div>
         </div>
         <nav aria-label="Panel" class="overflow-x-auto px-3 pb-3 lg:px-3">
           <ul class="flex gap-1 lg:flex-col">
@@ -79,6 +81,7 @@ const roleLabel = staff.roles.includes("admin") ? "Administradora" : staff.roles
           <a href="/" class="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline">
             <Storefront size={18} aria-hidden="true" /> Ver la tienda
           </a>
+          <LogoutButton client:idle />
         </div>
       </aside>
 

@@ -13,7 +13,8 @@ import {
 } from "./catalog";
 import * as schema from "./db/schema";
 import type { AppEnv } from "./env";
-import { requireStaff } from "./middleware/auth";
+import { z } from "zod";
+import { identifyStaff, login, requireStaff, sessionCookie } from "./middleware/auth";
 import { adminCatalog } from "./routes/admin-catalog";
 import { adminSite } from "./routes/admin-site";
 import { adminKids, kids } from "./routes/kids";
@@ -67,6 +68,37 @@ app.route("/api", pub);
 app.route("/api/juega", juega);
 app.route("/api/kids", kids);
 
+/* ------------------------------ Sesión ------------------------------ */
+
+/** Solo se aceptan peticiones del mismo sitio (otra página no puede iniciar ni cerrar sesión). */
+const sameOrigin = (req: Request) => {
+  const origin = req.headers.get("Origin");
+  return !origin || origin === new URL(req.url).origin;
+};
+
+app.post(
+  "/api/auth/login",
+  zValidator("json", z.object({ username: z.string().max(80), password: z.string().max(200) })),
+  async (c) => {
+    if (!sameOrigin(c.req.raw)) throw new HTTPException(403, { message: "Origen no permitido." });
+    const { username, password } = c.req.valid("json");
+    c.header("Set-Cookie", await login(c.req.raw, c.env, username, password));
+    c.header("Cache-Control", "no-store");
+    return c.json({ ok: true });
+  },
+);
+
+app.post("/api/auth/logout", (c) => {
+  if (!sameOrigin(c.req.raw)) throw new HTTPException(403, { message: "Origen no permitido." });
+  c.header("Set-Cookie", sessionCookie(c.req.raw, "", 0));
+  return c.json({ ok: true });
+});
+
+app.get("/api/auth/me", async (c) => {
+  c.header("Cache-Control", "no-store");
+  return c.json(await identifyStaff(c.req.raw, c.env));
+});
+
 /* ------------------------------- Panel ------------------------------- */
 
 const admin = new Hono<AppEnv>();
@@ -105,5 +137,5 @@ export type { AppEnv, Bindings } from "./env";
 export * from "./catalog";
 export { getContest, getSettings, leaderboard, monthInBogota } from "./promo";
 export { publicKids, type PublicContest, type PublicEntry } from "./kids";
-export { identifyStaff, hasRole } from "./middleware/auth";
+export { authConfigured, identifyStaff, hasRole } from "./middleware/auth";
 export type { StaffIdentity } from "./env";

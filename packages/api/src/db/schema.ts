@@ -358,3 +358,11 @@ export const kidsEntries = sqliteTable(
 
 export type KidsContest = typeof kidsContests.$inferSelect;
 export type KidsEntry = typeof kidsEntries.$inferSelect;
+
+/** Intentos fallidos de inicio de sesión del panel, por IP (bloqueo de 15 min tras 5 fallos). */
+export const loginAttempts = sqliteTable("login_attempts", {
+  ip: text("ip").primaryKey(),
+  fails: integer("fails").notNull().default(0),
+  firstAt: integer("first_at").notNull(),
+  lockedUntil: integer("locked_until").notNull().default(0),
+});
