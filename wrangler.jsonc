@@ -1,0 +1,23 @@
+{
+  // Configuración para Cloudflare Pages (despliegue desde GitHub, rama pro/maya).
+  // Pages lee este archivo en la raíz del repositorio y manda sobre lo que diga el dashboard.
+  // El desarrollo local usa apps/web/wrangler.jsonc.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "maya-pets",
+  "pages_build_output_dir": "apps/web/dist",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "maya-db",
+      "database_id": "2d554d9f-ef9b-4f9c-bdda-e64f85ac2c7a"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "maya-media"
+    }
+  ]
+}
