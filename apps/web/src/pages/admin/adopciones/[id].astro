@@ -1,0 +1,29 @@
+---
+import { hasRole } from "@maya/api";
+import { ArrowLeft } from "@phosphor-icons/react/dist/ssr/ArrowLeft";
+import DogEditor, { type EditorDog } from "../../../islands/admin/DogEditor";
+import Admin from "../../../layouts/Admin.astro";
+import { adminFetch } from "../../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!, "adopciones")) return Astro.redirect("/admin");
+const id = Number(Astro.params.id);
+if (!Number.isInteger(id) || id <= 0) return Astro.redirect("/admin/adopciones");
+let dog: EditorDog;
+try {
+  dog = await adminFetch<EditorDog>(Astro, `/adopcion/perritos/${id}`);
+} catch {
+  return Astro.redirect("/admin/adopciones");
+}
+const created = Astro.url.searchParams.get("creado") === "1";
+---
+
+<Admin title={dog.name}>
+  <a href="/admin/adopciones" class="inline-flex min-h-11 items-center gap-2 font-medium text-teal-700 hover:underline">
+    <ArrowLeft size={18} aria-hidden="true" /> Adopción
+  </a>
+  <h1 class="mt-2 text-3xl font-bold [font-variation-settings:'wght'_720]">{dog.name}</h1>
+  {created && <p role="status" class="mt-3 rounded-2xl bg-teal-100 px-4 py-3 font-medium text-teal-900">Publicado. {dog.name} ya aparece en Adopta con Maya.</p>}
+  <div class="mt-6">
+    <DogEditor client:load dog={dog} />
+  </div>
+</Admin>

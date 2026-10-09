@@ -1,0 +1,174 @@
+---
+import { adoption } from "@maya/api";
+import { CaretRight } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { Check } from "@phosphor-icons/react/dist/ssr/Check";
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { Question } from "@phosphor-icons/react/dist/ssr/Question";
+import { X } from "@phosphor-icons/react/dist/ssr/X";
+import AdoptionForm from "../../islands/site/AdoptionForm";
+import Site from "../../layouts/Site.astro";
+import { envOf } from "../../lib/server";
+
+const dog = await adoption.dogBySlug(envOf(Astro).DB, Astro.params.slug!);
+if (!dog) return Astro.rewrite("/404");
+
+const { ageLabel, SIZE_LABEL, ENERGY_LABEL } = adoption;
+const triIcon = { si: Check, no: X, por_saber: Question };
+const triText = { si: "Sí", no: "No", por_saber: "Por saber" };
+const facts = [
+  ["Sexo", dog.sex === "hembra" ? "Hembra" : "Macho"],
+  ["Edad", ageLabel(dog.ageMonths)],
+  ["Tamaño", SIZE_LABEL[dog.size]],
+  ["Peso", dog.weightKg ? `${dog.weightKg} kg` : "Por confirmar"],
+  ["Raza", dog.breed],
+  ["Energía", ENERGY_LABEL[dog.energy]],
+] as const;
+const health = [
+  ["Vacunado", dog.vaccinated],
+  ["Esterilizado", dog.sterilized],
+  ["Desparasitado", dog.dewormed],
+] as const;
+const social = [
+  ["Con niños", dog.goodWithKids],
+  ["Con otros perros", dog.goodWithDogs],
+  ["Con gatos", dog.goodWithCats],
+] as const;
+const cover = dog.photos[0];
+const pronoun = dog.sex === "hembra" ? "ella" : "él";
+---
+
+<Site
+  title={`${dog.name}, ${ageLabel(dog.ageMonths)}, en adopción`}
+  description={`${dog.name} busca familia en Bogotá: ${SIZE_LABEL[dog.size].toLowerCase()}, ${ageLabel(dog.ageMonths)}, ${ENERGY_LABEL[dog.energy].toLowerCase()}. ${dog.temperament}`}
+  image={cover?.url}
+>
+  <div class="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">
+    <nav aria-label="Ruta" class="text-sm text-ink-soft">
+      <ol class="flex flex-wrap items-center gap-1">
+        <li><a href="/adopta" class="hover:underline">Adopta con Maya</a></li>
+        <li aria-hidden="true"><CaretRight size={14} /></li>
+        <li aria-current="page" class="text-ink">{dog.name}</li>
+      </ol>
+    </nav>
+
+    <div class="mt-6 grid gap-8 md:grid-cols-2 lg:gap-14">
+      <div>
+        <div class="toy aspect-[4/5] overflow-hidden bg-sun-100">
+          {
+            cover ? (
+              <img src={cover.url} alt={cover.alt} class="h-full w-full object-cover" loading="eager" fetchpriority="high" width={cover.width ?? 800} height={cover.height ?? 1000} />
+            ) : (
+              <div class="flex h-full flex-col items-center justify-center gap-3 text-teal-700">
+                <PawPrint weight="fill" size={84} aria-hidden="true" />
+                <span class="font-medium text-ink-soft">Las fotos llegan pronto</span>
+              </div>
+            )
+          }
+        </div>
+        {
+          dog.photos.length > 1 && (
+            <ul class="mt-3 grid grid-cols-4 gap-3" aria-label={`Más fotos de ${dog.name}`}>
+              {dog.photos.slice(1, 8).map((p) => (
+                <li class="aspect-square overflow-hidden rounded-2xl bg-sun-100">
+                  <a href={p.url} target="_blank" rel="noopener">
+                    <img src={p.url} alt={p.alt} class="h-full w-full object-cover" loading="lazy" width="200" height="200" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <div>
+        {
+          dog.status !== "disponible" && (
+            <p class="mb-3 inline-block rounded-full bg-teal-900 px-3 py-1 text-sm font-semibold text-white">
+              {dog.status === "en_proceso" ? "En proceso de adopción" : "¡Ya tiene hogar!"}
+            </p>
+          )
+        }
+        <h1 class="text-5xl font-bold [font-variation-settings:'wght'_780]">{dog.name}</h1>
+        {dog.temperament && <p class="mt-3 text-xl text-ink-soft">{dog.temperament}</p>}
+
+        <dl class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {
+            facts.map(([k, v]) => (
+              <div class="rounded-2xl bg-white p-3">
+                <dt class="text-sm text-ink-soft">{k}</dt>
+                <dd class="font-semibold">{v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          <section class="rounded-2xl bg-white p-4" aria-label="Salud">
+            <h2 class="font-semibold">Salud</h2>
+            <ul class="mt-2 space-y-1.5">
+              {
+                health.map(([k, ok]) => (
+                  <li class="flex items-center gap-2">
+                    {ok ? <Check size={18} weight="bold" className="text-teal-700" aria-hidden="true" /> : <X size={18} weight="bold" className="text-ink-soft" aria-hidden="true" />}
+                    <span>
+                      {k}: {ok ? "sí" : "pendiente"}
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+          <section class="rounded-2xl bg-white p-4" aria-label="Convivencia">
+            <h2 class="font-semibold">Convivencia</h2>
+            <ul class="mt-2 space-y-1.5">
+              {
+                social.map(([k, v]) => {
+                  const Icon = triIcon[v];
+                  return (
+                    <li class="flex items-center gap-2">
+                      <Icon size={18} weight="bold" className={v === "si" ? "text-teal-700" : v === "no" ? "text-danger" : "text-ink-soft"} aria-hidden="true" />
+                      <span>
+                        {k}: {triText[v].toLowerCase()}
+                      </span>
+                    </li>
+                  );
+                })
+              }
+            </ul>
+          </section>
+        </div>
+
+        {
+          dog.story && (
+            <section class="mt-8">
+              <h2 class="text-xl font-semibold">La historia de {dog.name}</h2>
+              <p class="mt-2 whitespace-pre-line text-lg text-ink-soft">{dog.story}</p>
+            </section>
+          )
+        }
+        {
+          dog.specialNeeds && (
+            <p class="mt-4 rounded-2xl bg-sun-100 px-4 py-3 text-teal-900">
+              <strong>Para tener en cuenta:</strong> {dog.specialNeeds}
+            </p>
+          )
+        }
+        {dog.status === "disponible" && <a href="#solicitud" class="btn btn-sun mt-8 text-lg">Quiero adoptar a {dog.name}</a>}
+      </div>
+    </div>
+
+    {
+      dog.status !== "adoptado" && (
+        <section id="solicitud" class="mx-auto mt-16 max-w-2xl scroll-mt-24">
+          {dog.status === "en_proceso" && (
+            <p class="mb-4 rounded-2xl bg-white px-4 py-3 text-ink-soft">
+              {dog.name} ya tiene una familia en proceso. Si quieres, deja tu solicitud: si no se da, te escribimos primero a ti, o te
+              presentamos a alguien parecido a {pronoun}.
+            </p>
+          )}
+          <AdoptionForm client:visible dogId={dog.id} dogName={dog.name} />
+        </section>
+      )
+    }
+  </div>
+</Site>

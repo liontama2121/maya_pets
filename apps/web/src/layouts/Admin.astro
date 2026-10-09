@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { hasRole } from "@maya/api";
 import { CalendarStar } from "@phosphor-icons/react/dist/ssr/CalendarStar";
 import { Coin } from "@phosphor-icons/react/dist/ssr/Coin";
+import { Dog } from "@phosphor-icons/react/dist/ssr/Dog";
 import { House } from "@phosphor-icons/react/dist/ssr/House";
 import { PaintBrush } from "@phosphor-icons/react/dist/ssr/PaintBrush";
 import { Trophy } from "@phosphor-icons/react/dist/ssr/Trophy";
@@ -22,6 +23,7 @@ const path = Astro.url.pathname;
 const nav = [
   { href: "/admin", label: "Resumen", Icon: House, show: true, exact: true },
   { href: "/admin/productos", label: "Productos", Icon: Package, show: hasRole(staff, "vendedor") },
+  { href: "/admin/adopciones", label: "Adopción", Icon: Dog, show: hasRole(staff, "adopciones") },
   { href: "/admin/coin", label: "Entregar COIN", Icon: Coin, show: hasRole(staff, "vendedor") },
   { href: "/admin/categorias", label: "Categorías", Icon: SquaresFour, show: hasRole(staff) },
   { href: "/admin/temporadas", label: "Temporadas", Icon: CalendarStar, show: hasRole(staff) },

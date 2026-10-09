@@ -1,0 +1,18 @@
+---
+import { hasRole } from "@maya/api";
+import RequestsInbox from "../../../islands/admin/RequestsInbox";
+import Admin from "../../../layouts/Admin.astro";
+
+if (!hasRole(Astro.locals.staff!, "adopciones")) return Astro.redirect("/admin");
+---
+
+<Admin title="Solicitudes de adopción">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Adopción</h1>
+  <nav aria-label="Secciones de adopción" class="mt-3 flex gap-2">
+    <a href="/admin/adopciones" class="chip !min-h-10 text-sm">Perritos</a>
+    <a href="/admin/adopciones/solicitudes" class="chip !min-h-10 text-sm" aria-current="page">Solicitudes</a>
+  </nav>
+  <div class="mt-6">
+    <RequestsInbox client:load />
+  </div>
+</Admin>

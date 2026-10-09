@@ -18,9 +18,10 @@ const [low, counts, season] = await Promise.all([
   DB.prepare(
     `SELECT (SELECT COUNT(*) FROM products WHERE active = 1) AS products,
             (SELECT COUNT(*) FROM categories WHERE active = 1) AS categories,
+            (SELECT COUNT(*) FROM adoption_requests WHERE status = 'nueva') AS new_requests,
             (SELECT COUNT(*) FROM product_variants v JOIN products p ON p.id = v.product_id
                WHERE v.active = 1 AND p.active = 1 AND v.stock = 0) AS sold_out`,
-  ).first<{ products: number; categories: number; sold_out: number }>(),
+  ).first<{ products: number; categories: number; sold_out: number; new_requests: number }>(),
   liveSeason(DB),
 ]);
 
@@ -38,6 +39,17 @@ const isAdmin = hasRole(staff);
     </div>
     {isAdmin && <a href="/admin/productos/nuevo" class="btn btn-sun"><Plus size={20} weight="bold" aria-hidden="true" /> Nuevo producto</a>}
   </div>
+
+  {
+    (counts?.new_requests ?? 0) > 0 && (
+      <a href="/admin/adopciones/solicitudes" class="mt-6 flex items-center justify-between gap-3 rounded-[var(--radius-toy)] bg-sun-400 px-5 py-4 font-semibold text-teal-900 shadow-[inset_0_-4px_0_var(--color-sun-600)]">
+        <span>
+          {counts!.new_requests} {counts!.new_requests === 1 ? "solicitud de adopción nueva" : "solicitudes de adopción nuevas"}
+        </span>
+        <span aria-hidden="true">Revisar →</span>
+      </a>
+    )
+  }
 
   <dl class="mt-8 grid grid-cols-3 gap-3 sm:max-w-2xl">
     <div class="rounded-[var(--radius-toy)] bg-white p-4">

@@ -15,6 +15,7 @@ import * as schema from "./db/schema";
 import type { AppEnv } from "./env";
 import { z } from "zod";
 import { identifyStaff, login, requireStaff, sessionCookie } from "./middleware/auth";
+import { adminAdopcion, adopcion } from "./routes/adoption";
 import { adminCatalog } from "./routes/admin-catalog";
 import { adminSite } from "./routes/admin-site";
 import { adminKids, kids } from "./routes/kids";
@@ -67,6 +68,7 @@ pub.get("/season", async (c) => c.json(await liveSeason(c.env.DB)));
 app.route("/api", pub);
 app.route("/api/juega", juega);
 app.route("/api/kids", kids);
+app.route("/api/adopcion", adopcion);
 
 /* ------------------------------ Sesión ------------------------------ */
 
@@ -111,6 +113,7 @@ admin.route("/", adminCatalog);
 admin.route("/", adminSite);
 admin.route("/", adminPromo);
 admin.route("/", adminKids);
+admin.route("/", adminAdopcion);
 
 app.route("/api/admin", admin);
 
@@ -137,5 +140,6 @@ export type { AppEnv, Bindings } from "./env";
 export * from "./catalog";
 export { getContest, getSettings, leaderboard, monthInBogota } from "./promo";
 export { publicKids, type PublicContest, type PublicEntry } from "./kids";
+export * as adoption from "./adoption";
 export { authConfigured, identifyStaff, hasRole } from "./middleware/auth";
 export type { StaffIdentity } from "./env";

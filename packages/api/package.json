@@ -9,7 +9,8 @@
     "./seasons": "./src/seasons.ts",
     "./money": "./src/lib/money.ts",
     "./game": "./src/game/lluvia.ts",
-    "./game/casa": "./src/game/casa.ts"
+    "./game/casa": "./src/game/casa.ts",
+    "./adoption": "./src/adoption.ts"
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",

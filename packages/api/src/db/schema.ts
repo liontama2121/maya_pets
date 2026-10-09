@@ -366,3 +366,102 @@ export const loginAttempts = sqliteTable("login_attempts", {
   firstAt: integer("first_at").notNull(),
   lockedUntil: integer("locked_until").notNull().default(0),
 });
+
+/* -------------------------------- Adopción -------------------------------- */
+
+export const DOG_SIZES = ["pequeno", "mediano", "grande"] as const;
+export const DOG_ENERGY = ["baja", "media", "alta"] as const;
+export const DOG_STATUS = ["disponible", "en_proceso", "adoptado"] as const;
+export const TRI = ["si", "no", "por_saber"] as const;
+
+/** Perrito en adopción. Las fotos las sube Luisa desde el panel. */
+export const dogs = sqliteTable(
+  "dogs",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    sex: text("sex", { enum: ["macho", "hembra"] }).notNull(),
+    /** Edad aproximada en meses. */
+    ageMonths: integer("age_months").notNull(),
+    size: text("size", { enum: DOG_SIZES }).notNull(),
+    weightKg: integer("weight_kg"),
+    breed: text("breed").notNull().default("Criollo"),
+    energy: text("energy", { enum: DOG_ENERGY }).notNull().default("media"),
+    temperament: text("temperament").notNull().default(""),
+    goodWithKids: text("good_with_kids", { enum: TRI }).notNull().default("por_saber"),
+    goodWithDogs: text("good_with_dogs", { enum: TRI }).notNull().default("por_saber"),
+    goodWithCats: text("good_with_cats", { enum: TRI }).notNull().default("por_saber"),
+    sterilized: integer("sterilized", { mode: "boolean" }).notNull().default(false),
+    vaccinated: integer("vaccinated", { mode: "boolean" }).notNull().default(false),
+    dewormed: integer("dewormed", { mode: "boolean" }).notNull().default(false),
+    story: text("story").notNull().default(""),
+    specialNeeds: text("special_needs").notNull().default(""),
+    status: text("status", { enum: DOG_STATUS }).notNull().default("disponible"),
+    featured: integer("featured", { mode: "boolean" }).notNull().default(false),
+    adoptedAt: text("adopted_at"),
+    createdAt: text("created_at").notNull().default(now),
+    updatedAt: text("updated_at").notNull().default(now),
+  },
+  (t) => [uniqueIndex("dogs_slug_uq").on(t.slug), index("dogs_status_idx").on(t.status)],
+);
+
+export const dogPhotos = sqliteTable(
+  "dog_photos",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    dogId: integer("dog_id")
+      .notNull()
+      .references(() => dogs.id, { onDelete: "cascade" }),
+    key: text("key").notNull(),
+    alt: text("alt").notNull().default(""),
+    width: integer("width"),
+    height: integer("height"),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [index("dog_photos_dog_idx").on(t.dogId)],
+);
+
+export const REQUEST_STATUS = ["nueva", "en_revision", "aprobada", "rechazada"] as const;
+
+/** Solicitud de adopción (con autorización de datos, Ley 1581 de 2012). */
+export const adoptionRequests = sqliteTable(
+  "adoption_requests",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    dogId: integer("dog_id").references(() => dogs.id, { onDelete: "set null" }),
+    fullName: text("full_name").notNull(),
+    phone: text("phone").notNull(),
+    email: text("email").notNull().default(""),
+    neighborhood: text("neighborhood").notNull().default(""),
+    homeType: text("home_type", { enum: ["apartamento", "casa", "casa_patio", "finca"] }).notNull(),
+    hoursAlone: integer("hours_alone").notNull(),
+    otherPets: text("other_pets").notNull().default(""),
+    hasKids: integer("has_kids", { mode: "boolean" }).notNull().default(false),
+    experience: text("experience").notNull().default(""),
+    message: text("message").notNull().default(""),
+    status: text("status", { enum: REQUEST_STATUS }).notNull().default("nueva"),
+    consentAt: text("consent_at").notNull(),
+    createdAt: text("created_at").notNull().default(now),
+    updatedAt: text("updated_at").notNull().default(now),
+  },
+  (t) => [index("requests_status_idx").on(t.status, t.createdAt)],
+);
+
+/** Notas internas de cada solicitud (historial, no se borran). */
+export const adoptionNotes = sqliteTable(
+  "adoption_notes",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    requestId: integer("request_id")
+      .notNull()
+      .references(() => adoptionRequests.id, { onDelete: "cascade" }),
+    text: text("text").notNull(),
+    author: text("author").notNull(),
+    createdAt: text("created_at").notNull().default(now),
+  },
+  (t) => [index("notes_request_idx").on(t.requestId)],
+);
+
+export type Dog = typeof dogs.$inferSelect;
+export type AdoptionRequest = typeof adoptionRequests.$inferSelect;

@@ -1,0 +1,60 @@
+---
+import { adoption, hasRole } from "@maya/api";
+import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { Plus } from "@phosphor-icons/react/dist/ssr/Plus";
+import Admin from "../../../layouts/Admin.astro";
+import { adminFetch } from "../../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!, "adopciones")) return Astro.redirect("/admin");
+type Row = adoption.DogCardData & { photoCount: number; openRequests: number };
+const dogs = await adminFetch<Row[]>(Astro, "/adopcion/perritos");
+const pending = dogs.reduce((n, d) => n + d.openRequests, 0);
+const label = adoption.STATUS_LABEL;
+---
+
+<Admin title="Adopción">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Adopción</h1>
+      <nav aria-label="Secciones de adopción" class="mt-3 flex gap-2">
+        <a href="/admin/adopciones" class="chip !min-h-10 text-sm" aria-current="page">Perritos</a>
+        <a href="/admin/adopciones/solicitudes" class="chip !min-h-10 text-sm">
+          Solicitudes {pending > 0 && <span class="tnum ml-1 rounded-full bg-sun-400 px-2 text-teal-900">{pending}</span>}
+        </a>
+      </nav>
+    </div>
+    <a href="/admin/adopciones/nuevo" class="btn btn-sun"><Plus size={20} weight="bold" aria-hidden="true" /> Nuevo perrito</a>
+  </div>
+
+  {
+    dogs.length === 0 ? (
+      <div class="mt-8 flex flex-col items-center rounded-[var(--radius-toy)] bg-white px-6 py-14 text-center">
+        <PawPrint weight="fill" size={48} className="text-teal-400" aria-hidden="true" />
+        <p class="mt-3 text-lg font-semibold">Aún no hay perritos.</p>
+        <a href="/admin/adopciones/nuevo" class="btn btn-sun mt-5">Publicar el primero</a>
+      </div>
+    ) : (
+      <ul class="mt-6 overflow-hidden rounded-[var(--radius-toy)] bg-white">
+        {dogs.map((d) => (
+          <li class="border-b border-line last:border-0">
+            <a href={`/admin/adopciones/${d.id}`} class="grid grid-cols-[56px_1fr_auto] items-center gap-4 px-4 py-3 hover:bg-teal-50">
+              <span class="size-14 overflow-hidden rounded-xl bg-sun-100">
+                {d.photo ? <img src={d.photo.url} alt="" class="h-full w-full object-cover" loading="lazy" width="56" height="56" /> : <span class="grid h-full place-items-center text-teal-700"><PawPrint weight="fill" size={22} /></span>}
+              </span>
+              <span class="min-w-0">
+                <span class="block font-semibold">{d.name}</span>
+                <span class="block truncate text-sm text-ink-soft">
+                  {adoption.ageLabel(d.ageMonths)} · {adoption.SIZE_LABEL[d.size]} · {d.photoCount} {d.photoCount === 1 ? "foto" : "fotos"}
+                  {d.openRequests > 0 ? ` · ${d.openRequests} solicitudes abiertas` : ""}
+                </span>
+              </span>
+              <span class:list={["rounded-full px-3 py-1 text-sm font-semibold", d.status === "disponible" ? "bg-teal-100 text-teal-900" : d.status === "en_proceso" ? "bg-sun-100 text-teal-900" : "bg-ground-2 text-ink-soft"]}>
+                {label[d.status]}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Admin>
