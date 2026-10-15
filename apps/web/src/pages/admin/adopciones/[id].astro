@@ -22,7 +22,7 @@ const created = Astro.url.searchParams.get("creado") === "1";
     <ArrowLeft size={18} aria-hidden="true" /> Adopción
   </a>
   <h1 class="mt-2 text-3xl font-bold [font-variation-settings:'wght'_720]">{dog.name}</h1>
-  {created && <p role="status" class="mt-3 rounded-2xl bg-teal-100 px-4 py-3 font-medium text-teal-900">Publicado. {dog.name} ya aparece en Adopta con Maya.</p>}
+  {created && <p role="status" class="mt-3 rounded-2xl bg-teal-100 px-4 py-3 font-medium text-teal-900">Publicado. {dog.name} ya aparece en Adopta con MAYA.</p>}
   <div class="mt-6">
     <DogEditor client:load dog={dog} />
   </div>

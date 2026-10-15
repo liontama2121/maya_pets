@@ -1,0 +1,23 @@
+---
+/**
+ * Nombre de una sub-marca: el wordmark "MAYA" en la tipografía de marca (peso alto) + el nombre.
+ * Uso: <SubBrand brand="conecta" />. La grafía sale de SUB_BRANDS; no se inventan logos.
+ */
+import { SUB_BRANDS, type SubBrandKey } from "../../lib/brands";
+
+interface Props {
+  brand: SubBrandKey;
+  class?: string;
+  /** "inherit" toma el color del texto; "accent" pinta "MAYA" con el acento de marca. */
+  tone?: "inherit" | "accent";
+}
+const { brand, class: className = "", tone = "inherit" } = Astro.props;
+const name = SUB_BRANDS[brand].name;
+const [before, after] = name.split("MAYA");
+---
+
+<span class:list={["inline-flex items-baseline gap-[0.28em] whitespace-nowrap", className]}>
+  {before?.trim() && <span>{before.trim()}</span>}
+  <span class:list={["font-bold tracking-tight [font-variation-settings:'wght'_800]", tone === "accent" && "text-[var(--accent)]"]}>MAYA</span>
+  {after?.trim() && <span>{after.trim()}</span>}
+</span>

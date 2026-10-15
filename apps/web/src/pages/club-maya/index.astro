@@ -1,0 +1,54 @@
+---
+// Fase 1: presentación de Club MAYA. El formulario de inscripción, las mascotas y los niveles llegan en la fase 3.
+import { Cake } from "@phosphor-icons/react/dist/ssr/Cake";
+import { Crown } from "@phosphor-icons/react/dist/ssr/Crown";
+import { Gift } from "@phosphor-icons/react/dist/ssr/Gift";
+import { Package } from "@phosphor-icons/react/dist/ssr/Package";
+import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
+import SubBrand from "../../components/site/SubBrand.astro";
+import Site from "../../layouts/Site.astro";
+import { whatsappLink } from "../../lib/format";
+
+const perks = [
+  { Icon: Cake, title: "El cumpleaños de tu mascota", text: "Un saludo y un detalle especial cada año. Si no sabes el día exacto, con el mes basta." },
+  { Icon: Package, title: "Te avisamos antes de que se acabe", text: "Calculamos cuándo se te acaba el alimento y te escribimos a tiempo." },
+  { Icon: Crown, title: "Niveles que suben contigo", text: "Huellita, Amigo Fiel y Familia MAYA: más beneficios mientras más nos acompañas." },
+  { Icon: Gift, title: "Promociones para tu mascota", text: "Ofertas pensadas para perros o gatos, según lo que de verdad compras." },
+];
+---
+
+<Site
+  title="Club MAYA: beneficios para tu perro o gato"
+  description="Únete a Club MAYA: cumpleaños de tu mascota, recordatorios de alimento, niveles Huellita, Amigo Fiel y Familia MAYA, y promociones."
+>
+  <section class="on-accent bg-sun-400 text-teal-900">
+    <div class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
+      <h1 class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_780] sm:text-6xl"><SubBrand brand="club" /></h1>
+      <p class="mt-4 max-w-[46ch] text-xl">Para las familias que nos visitan seguido. Registra a tu mascota y Maya se acuerda de todo por ti.</p>
+    </div>
+  </section>
+  <section class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6" aria-label="Beneficios">
+    <ul class="grid gap-4 sm:grid-cols-2">
+      {
+        perks.map(({ Icon, title, text }) => (
+          <li class="flex gap-4 rounded-[var(--radius-toy)] bg-white p-6">
+            <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-teal-100 text-teal-800">
+              <Icon weight="duotone" size={26} aria-hidden="true" />
+            </span>
+            <span>
+              <span class="block text-xl font-bold [font-variation-settings:'wght'_700]">{title}</span>
+              <span class="mt-1 block text-ink-soft">{text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-8 rounded-[var(--radius-toy)] bg-white p-6">
+      <p class="text-xl font-semibold">Muy pronto podrás inscribirte aquí.</p>
+      <p class="mt-1 text-ink-soft">Mientras tanto, escríbenos y te inscribimos con tu próxima compra.</p>
+      <a href={whatsappLink("Hola, quiero unirme al Club MAYA.")} target="_blank" rel="noopener" class="btn btn-teal mt-4">
+        <WhatsappLogo weight="fill" size={20} aria-hidden="true" /> Quiero unirme
+      </a>
+    </div>
+  </section>
+</Site>

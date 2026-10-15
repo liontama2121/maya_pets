@@ -20,7 +20,7 @@ const current = games.find((g) => g.id === juego)!;
         <nav aria-label="Elegir juego" class="mt-4 flex flex-wrap gap-2">
           {
             games.map((g) => (
-              <a href={`/juega/prueba?juego=${g.id}`} class="chip" aria-current={g.id === juego ? "page" : undefined}>
+              <a href={`/maya-premia/prueba?juego=${g.id}`} class="chip" aria-current={g.id === juego ? "page" : undefined}>
                 {g.name}
               </a>
             ))

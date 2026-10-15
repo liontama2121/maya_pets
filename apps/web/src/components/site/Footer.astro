@@ -1,40 +1,53 @@
 ---
 import { Heart } from "@phosphor-icons/react/dist/ssr/Heart";
 import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
-import { WHATSAPP_DISPLAY, whatsappLink } from "../../lib/format";
+import { CONECTA_SECTIONS } from "../../lib/brands";
+import { CONTACT_WHATSAPP, whatsappLink } from "../../lib/format";
 import Logo from "./Logo.astro";
+import SubBrand from "./SubBrand.astro";
 
 const year = new Date().getFullYear();
+const link = "inline-flex min-h-11 items-center hover:underline";
 ---
 
-<footer id="contacto" class="on-field mt-24 bg-[var(--field)] text-white">
+<footer class="on-field mt-24 bg-[var(--field)] text-white">
   <div class="rope mx-auto -mt-[5px] max-w-[1280px] rounded-none sm:rounded-full" aria-hidden="true"></div>
-  <div class="mx-auto grid max-w-[1280px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.3fr_1fr_1fr]">
+  <div class="mx-auto grid max-w-[1280px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
     <div class="max-w-sm">
       <Logo height={84} />
-      <p class="mt-2 text-white/80">Tienda para perros y gatos en Bogotá, con perritos que buscan hogar.</p>
+      <p class="mt-4 text-white/80">Tienda para perros y gatos en Bogotá, con una perrita imaginaria que guía a toda la familia.</p>
     </div>
 
-    <nav aria-label="Pie de página">
-      <h2 class="text-base font-semibold text-white">Explora</h2>
+    <nav aria-label="Tienda y programas">
+      <h2 class="text-base font-semibold text-white">MAYA Pets</h2>
       <ul class="mt-3 space-y-1">
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/tienda?especie=perro">Para perros</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/tienda?especie=gato">Para gatos</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/adopta">Adopta con Maya</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/juega">Juega con tu COIN</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/maya-kids">MAYA Kids</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/nosotros">La historia de Maya</a></li>
-        <li><a class="inline-flex min-h-11 items-center hover:underline" href="/privacidad">Privacidad</a></li>
+        <li><a class={link} href="/tienda?especie=perro">Perros</a></li>
+        <li><a class={link} href="/tienda?especie=gato">Gatos</a></li>
+        <li><a class={link} href="/tienda">Tienda</a></li>
+        <li><a class={link} href="/club-maya"><SubBrand brand="club" /></a></li>
+        <li><a class={link} href="/maya-kids"><SubBrand brand="kids" /></a></li>
+        <li><a class={link} href="/maya-premia"><SubBrand brand="premia" /></a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="MAYA Conecta">
+      <h2 class="text-base font-semibold text-white"><a href="/maya-conecta" class="hover:underline"><SubBrand brand="conecta" /></a></h2>
+      <ul class="mt-3 space-y-1">
+        {CONECTA_SECTIONS.map((s) => <li><a class={link} href={s.href}>{s.name}</a></li>)}
       </ul>
     </nav>
 
     <div>
-      <h2 class="text-base font-semibold text-white">Escríbenos</h2>
+      <h2 class="text-base font-semibold text-white"><a href="/contacto" class="hover:underline">Contacto</a></h2>
       <p class="mt-3 text-white/80">Respondemos por WhatsApp. Dirección y horario de la tienda: muy pronto.</p>
       <a href={whatsappLink()} target="_blank" rel="noopener" class="btn btn-sun mt-4">
         <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
-        {WHATSAPP_DISPLAY}
+        {CONTACT_WHATSAPP.display}
       </a>
+      <ul class="mt-4 space-y-1 text-sm">
+        <li><a class={link} href="/nosotros">La historia de Maya</a></li>
+        <li><a class={link} href="/privacidad">Privacidad</a></li>
+      </ul>
     </div>
   </div>
   <div class="border-t border-white/15">

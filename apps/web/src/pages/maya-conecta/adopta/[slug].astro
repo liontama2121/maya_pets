@@ -5,9 +5,9 @@ import { Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
 import { Question } from "@phosphor-icons/react/dist/ssr/Question";
 import { X } from "@phosphor-icons/react/dist/ssr/X";
-import AdoptionForm from "../../islands/site/AdoptionForm";
-import Site from "../../layouts/Site.astro";
-import { envOf } from "../../lib/server";
+import AdoptionForm from "../../../islands/site/AdoptionForm";
+import Site from "../../../layouts/Site.astro";
+import { envOf } from "../../../lib/server";
 
 const dog = await adoption.dogBySlug(envOf(Astro).DB, Astro.params.slug!);
 if (!dog) return Astro.rewrite("/404");
@@ -45,7 +45,9 @@ const pronoun = dog.sex === "hembra" ? "ella" : "él";
   <div class="mx-auto max-w-[1280px] px-4 pt-6 sm:px-6">
     <nav aria-label="Ruta" class="text-sm text-ink-soft">
       <ol class="flex flex-wrap items-center gap-1">
-        <li><a href="/adopta" class="hover:underline">Adopta con Maya</a></li>
+        <li><a href="/maya-conecta" class="hover:underline">MAYA Conecta</a></li>
+        <li aria-hidden="true"><CaretRight size={14} /></li>
+        <li><a href="/maya-conecta/adopta" class="hover:underline">Adopta con MAYA</a></li>
         <li aria-hidden="true"><CaretRight size={14} /></li>
         <li aria-current="page" class="text-ink">{dog.name}</li>
       </ol>

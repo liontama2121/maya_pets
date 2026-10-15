@@ -93,7 +93,7 @@ export default function CoinsManager({
     }
   };
 
-  const link = issued ? `${siteUrl}/juega?codigo=${issued.code}` : "";
+  const link = issued ? `${siteUrl}/maya-premia?codigo=${issued.code}` : "";
   const message = issued
     ? `¡Gracias por tu compra en MAYA Pets! Tu COIN es ${issued.code}: ${issued.attempts_total} intentos en el juego del mes y la boleta #${issued.ticket} para la rifa. Juega aquí: ${link}`
     : "";
@@ -164,7 +164,7 @@ export default function CoinsManager({
             <p className="mt-2 text-white/90">
               {issued.attempts_total} intentos · boleta <span className="tnum font-semibold">#{issued.ticket}</span> · vence {fmtDate(issued.expires_at)}
             </p>
-            <p className="mt-1 text-sm text-white/80">Juega en {siteUrl.replace(/^https?:\/\//, "")}/juega</p>
+            <p className="mt-1 text-sm text-white/80">Juega en {siteUrl.replace(/^https?:\/\//, "")}/maya-premia</p>
             <div className="no-print mt-4 flex flex-wrap gap-2">
               <button type="button" className="btn btn-sun btn-sm" onClick={copy}>
                 <Copy size={18} aria-hidden="true" /> {copied ? "Copiado" : "Copiar"}

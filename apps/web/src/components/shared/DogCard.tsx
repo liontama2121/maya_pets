@@ -75,7 +75,7 @@ export function DogCard({
   );
   const cls = "group block rounded-[var(--radius-toy)] outline-offset-4";
   return asLink ? (
-    <a href={`/adopta/${dog.slug}`} className={cls}>
+    <a href={`/maya-conecta/adopta/${dog.slug}`} className={cls}>
       {body}
     </a>
   ) : (

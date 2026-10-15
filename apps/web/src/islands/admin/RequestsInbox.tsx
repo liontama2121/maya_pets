@@ -171,7 +171,7 @@ export default function RequestsInbox() {
                         <WhatsappLogo size={18} weight="fill" aria-hidden="true" /> Escribir
                       </a>
                       {r.dog_slug && (
-                        <a href={`/adopta/${r.dog_slug}`} target="_blank" className="btn btn-soft btn-sm">
+                        <a href={`/maya-conecta/adopta/${r.dog_slug}`} target="_blank" className="btn btn-soft btn-sm">
                           Ver a {r.dog_name}
                         </a>
                       )}

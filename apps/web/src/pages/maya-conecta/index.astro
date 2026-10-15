@@ -1,0 +1,78 @@
+---
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { BookOpenText } from "@phosphor-icons/react/dist/ssr/BookOpenText";
+import { ChatsCircle } from "@phosphor-icons/react/dist/ssr/ChatsCircle";
+import { HandHeart } from "@phosphor-icons/react/dist/ssr/HandHeart";
+import { Handshake } from "@phosphor-icons/react/dist/ssr/Handshake";
+import { HouseLine } from "@phosphor-icons/react/dist/ssr/HouseLine";
+import { MapPin } from "@phosphor-icons/react/dist/ssr/MapPin";
+import SubBrand from "../../components/site/SubBrand.astro";
+import Site from "../../layouts/Site.astro";
+import { CONECTA_SECTIONS } from "../../lib/brands";
+
+const ICONS = {
+  adopta: HouseLine,
+  "ayudame-a-volver": MapPin,
+  blog: BookOpenText,
+  aliados: Handshake,
+  historias: ChatsCircle,
+  solidaria: HandHeart,
+} as const;
+---
+
+<Site
+  title="MAYA Conecta: la comunidad de MAYA Pets en Bogotá"
+  description="Adopción, mascotas perdidas y encontradas, blog, aliados de confianza, historias y campañas solidarias. La comunidad de MAYA Pets en Bogotá."
+>
+  <section class="on-field bg-[var(--field)] text-white">
+    <div class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
+      <h1 class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_760] sm:text-6xl">
+        <SubBrand brand="conecta" tone="accent" />
+      </h1>
+      <p class="mt-4 max-w-[50ch] text-xl text-white/90">
+        Donde se encuentran las familias, sus mascotas y quienes las cuidan. Maya no se ve, pero conoce a todo el barrio.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6" aria-label="Secciones de MAYA Conecta">
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        CONECTA_SECTIONS.map((s, i) => {
+          const Icon = ICONS[s.slug];
+          const inner = (
+            <>
+              <span class:list={["grid size-14 place-items-center rounded-2xl", i === 0 ? "bg-sun-400 text-teal-900" : "bg-teal-100 text-teal-800"]}>
+                <Icon weight="duotone" size={30} aria-hidden="true" />
+              </span>
+              <span class="mt-4 block text-2xl font-bold [font-variation-settings:'wght'_720]">{s.name}</span>
+              <span class="mt-1 block text-ink-soft">{s.text}</span>
+              <span class="mt-4 inline-flex items-center gap-1.5 font-semibold text-teal-700">
+                {s.ready ? (
+                  <>
+                    Entrar <ArrowRight size={18} weight="bold" aria-hidden="true" />
+                  </>
+                ) : (
+                  <span class="rounded-full bg-ground-2 px-3 py-1 text-sm text-ink-soft">Muy pronto</span>
+                )}
+              </span>
+            </>
+          );
+          return (
+            <li>
+              {s.ready ? (
+                <a href={s.href} class="toy group block h-full bg-white p-6 transition-transform hover:-translate-y-0.5">
+                  {inner}
+                </a>
+              ) : (
+                <div class="h-full rounded-[var(--radius-toy)] bg-white/70 p-6" aria-disabled="true">
+                  {inner}
+                </div>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+</Site>

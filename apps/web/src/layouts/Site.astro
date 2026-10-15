@@ -10,7 +10,7 @@ import { Sparkle } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import Footer from "../components/site/Footer.astro";
 import Header from "../components/site/Header.astro";
 import CartDrawer from "../islands/site/CartDrawer";
-import { WHATSAPP_NUMBER, whatsappLink } from "../lib/format";
+import { CONTACT_WHATSAPP, whatsappLink } from "../lib/format";
 import { envOf } from "../lib/server";
 
 interface Props {
@@ -41,7 +41,7 @@ const jsonLd = {
   name: "MAYA Pets",
   slogan: "Mi mascota, mi familia",
   url: Astro.site?.toString(),
-  telephone: `+${WHATSAPP_NUMBER}`,
+  telephone: `+${CONTACT_WHATSAPP.number}`,
   areaServed: { "@type": "City", name: "Bogotá" },
   address: { "@type": "PostalAddress", addressLocality: "Bogotá", addressCountry: "CO" },
 };

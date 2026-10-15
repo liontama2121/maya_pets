@@ -324,7 +324,7 @@ function SeasonForm({
         <div className="overflow-hidden rounded-[var(--radius-toy)] bg-ground shadow-[0_20px_40px_-24px_rgb(4_42_43/0.5)]" style={seasonVars(season.preset)}>
           <div className="flex h-12 items-center justify-between bg-[var(--field)] px-4 text-sm font-medium text-white shadow-[inset_0_-4px_0_var(--field-lip)]" aria-hidden="true">
             <span className="font-bold">MAYA Pets</span>
-            <span className="flex gap-4 text-white/85"><span>Tienda</span><span style={{ color: season.preset.accent }}>Adopta con Maya</span></span>
+            <span className="flex gap-4 text-white/85"><span>Tienda</span><span style={{ color: season.preset.accent }}>Adopta con MAYA</span></span>
           </div>
           <div className="p-4">
             <SeasonBanner

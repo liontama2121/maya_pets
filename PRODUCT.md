@@ -32,7 +32,7 @@ Maya, la perrita del logo, es la perrita **imaginaria** de la hija de los fundad
 - Venta presencial en mostrador con POS: efectivo, tarjeta, Nequi, Daviplata, transferencia; apertura y cierre de caja.
 - Luisa carga productos y fotos desde el panel; el resultado debe verse igual que en la tienda pública.
 - Eventos de temporada controlados por Luisa: Halloween, Navidad, Año Nuevo, Amor y Amistad (septiembre en Colombia).
-- Contacto principal por WhatsApp: +57 304 6585424.
+- Contacto principal por WhatsApp: +57 317 537 8079.
 
 ## Capabilities and Constraints
 

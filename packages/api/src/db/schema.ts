@@ -297,7 +297,7 @@ export type GamePlay = typeof gamePlays.$inferSelect;
 
 /**
  * Concurso de dibujo. Luisa lo abre cuando quiera, con sus fechas.
- * La familia publica el dibujo en Instagram invitando a @mayapets como colaborador (Collab);
+ * La familia publica el dibujo en Instagram invitando a la cuenta de MAYA (@mypetshop.co) como colaboradora (Collab);
  * así el post aparece en la cuenta de MAYA y la página lee sus likes. Gana el que tenga más.
  */
 export const kidsContests = sqliteTable(

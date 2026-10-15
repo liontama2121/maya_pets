@@ -233,7 +233,7 @@ export default function JuegaCoin() {
           </form>
           {prizes}
           <p className="text-ink-soft">
-            ¿Sin COIN todavía? <a href="/juega/prueba" className="font-semibold text-teal-700 underline">Prueba los juegos gratis</a> y{" "}
+            ¿Sin COIN todavía? <a href="/maya-premia/prueba" className="font-semibold text-teal-700 underline">Prueba los juegos gratis</a> y{" "}
             <a href="/tienda" className="font-semibold text-teal-700 underline">mira la tienda</a>: cada compra desde el mínimo te da uno.
           </p>
         </div>
@@ -287,7 +287,7 @@ export default function JuegaCoin() {
           />
           <span className="text-sm">
             Acepto los{" "}
-            <a href="/juega/terminos" target="_blank" className="font-semibold text-teal-700 underline">
+            <a href="/maya-premia/terminos" target="_blank" className="font-semibold text-teal-700 underline">
               términos del concurso
             </a>{" "}
             y autorizo el tratamiento de mis datos según la{" "}

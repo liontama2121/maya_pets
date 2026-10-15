@@ -1,42 +1,89 @@
 ---
-import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
+import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import CartButton from "../../islands/site/CartButton";
+import { CONECTA_SECTIONS } from "../../lib/brands";
 import Logo from "./Logo.astro";
+import SubBrand from "./SubBrand.astro";
 
 const path = Astro.url.pathname;
 const especie = Astro.url.searchParams.get("especie");
-const links = [
-  { href: "/tienda?especie=perro", label: "Perros", current: path === "/tienda" && especie === "perro" },
-  { href: "/tienda?especie=gato", label: "Gatos", current: path === "/tienda" && especie === "gato" },
-  { href: "/tienda", label: "Tienda", current: path.startsWith("/tienda") && !especie },
-  { href: "/juega", label: "Juega y gana", current: path.startsWith("/juega") },
-  { href: "/maya-kids", label: "MAYA Kids", current: path.startsWith("/maya-kids") },
-  { href: "/adopta", label: "Adopta con Maya", current: path.startsWith("/adopta") },
+const isTienda = path.startsWith("/tienda");
+
+type Item = { href: string; label?: string; brand?: "club" | "kids" | "premia"; current: boolean };
+const before: Item[] = [
+  { href: "/tienda?especie=perro", label: "Perros", current: isTienda && especie === "perro" },
+  { href: "/tienda?especie=gato", label: "Gatos", current: isTienda && especie === "gato" },
+  { href: "/tienda", label: "Tienda", current: isTienda && !especie },
+  { href: "/club-maya", brand: "club", current: path.startsWith("/club-maya") },
 ];
+const after: Item[] = [
+  { href: "/maya-kids", brand: "kids", current: path.startsWith("/maya-kids") },
+  { href: "/maya-premia", brand: "premia", current: path.startsWith("/maya-premia") },
+  { href: "/contacto", label: "Contacto", current: path.startsWith("/contacto") },
+];
+const conectaCurrent = path.startsWith("/maya-conecta");
+const desktopLink =
+  "inline-flex h-11 items-center gap-1.5 rounded-full px-3 font-medium transition-colors hover:bg-white/10 aria-[current=page]:bg-white/15";
+const mobileLink = "flex min-h-12 items-center gap-2 rounded-2xl px-4 font-medium hover:bg-teal-50 aria-[current=page]:bg-teal-100";
 ---
 
 <header class="on-field sticky top-0 z-40 bg-[var(--field)] text-white shadow-[inset_0_-4px_0_var(--field-lip)]">
-  <div class="mx-auto flex h-[68px] max-w-[1280px] items-center gap-4 px-4 sm:px-6">
+  <div class="mx-auto flex h-[72px] max-w-[1280px] items-center gap-3 px-4 sm:px-6">
     <a href="/" class="shrink-0 rounded-xl" aria-label="MAYA Pets, ir al inicio">
-      <Logo height={56} eager />
+      <Logo height={52} eager />
     </a>
 
-    <nav aria-label="Principal" class="ml-auto hidden md:block">
-      <ul class="flex items-center gap-1">
+    <!-- Escritorio -->
+    <nav aria-label="Principal" class="ml-auto hidden xl:block">
+      <ul class="flex items-center gap-0.5">
         {
-          links.map((l) => (
+          before.map((l) => (
             <li>
-              <a
-                href={l.href}
-                aria-current={l.current ? "page" : undefined}
-                class:list={[
-                  "relative inline-flex h-11 items-center gap-1.5 rounded-full px-4 font-medium transition-colors hover:bg-white/10",
-                  l.current && "bg-white/15",
-                  l.href === "/adopta" && "text-[var(--accent)]",
-                ]}
-              >
-                {l.href === "/adopta" && <PawPrint weight="fill" size={18} aria-hidden="true" />}
-                {l.label}
+              <a href={l.href} aria-current={l.current ? "page" : undefined} class={desktopLink}>
+                {l.brand ? <SubBrand brand={l.brand} /> : l.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="relative">
+          <details class="conecta-menu group">
+            <summary
+              class:list={[desktopLink, "cursor-pointer list-none [&::-webkit-details-marker]:hidden", conectaCurrent && "bg-white/15"]}
+              aria-current={conectaCurrent ? "page" : undefined}
+            >
+              <SubBrand brand="conecta" tone="accent" />
+              <CaretDown size={14} weight="bold" className="transition-transform group-open:rotate-180" aria-hidden="true" />
+            </summary>
+            <div
+              class="absolute left-1/2 top-[calc(100%+10px)] w-[320px] -translate-x-1/2 rounded-[var(--radius-toy)] bg-white p-2 text-ink shadow-[0_20px_40px_-16px_rgb(4_42_43/0.5)]"
+            >
+              <a href="/maya-conecta" class="block rounded-2xl px-4 py-2.5 hover:bg-teal-50">
+                <span class="font-semibold">Todo <SubBrand brand="conecta" /></span>
+              </a>
+              <ul>
+                {
+                  CONECTA_SECTIONS.map((s) => (
+                    <li>
+                      <a
+                        href={s.href}
+                        aria-current={path.startsWith(s.href) ? "page" : undefined}
+                        class="block rounded-2xl px-4 py-2.5 hover:bg-teal-50 aria-[current=page]:bg-teal-100"
+                      >
+                        <span class="block font-medium">{s.name}</span>
+                        <span class="block text-sm text-ink-soft">{s.ready ? s.text : "Muy pronto"}</span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </details>
+        </li>
+        {
+          after.map((l) => (
+            <li>
+              <a href={l.href} aria-current={l.current ? "page" : undefined} class={desktopLink}>
+                {l.brand ? <SubBrand brand={l.brand} /> : l.label}
               </a>
             </li>
           ))
@@ -44,9 +91,10 @@ const links = [
       </ul>
     </nav>
 
-    <div class="ml-auto flex items-center gap-2 md:ml-2">
+    <div class="ml-auto flex items-center gap-2 xl:ml-1">
       <CartButton client:idle />
-      <details class="group relative md:hidden">
+      <!-- Celular y tablet -->
+      <details class="mobile-menu group relative xl:hidden">
         <summary
           class="flex h-11 cursor-pointer list-none items-center rounded-full px-4 font-medium hover:bg-white/10 [&::-webkit-details-marker]:hidden"
           aria-label="Abrir menú"
@@ -55,29 +103,70 @@ const links = [
         </summary>
         <nav
           aria-label="Principal"
-          class="absolute right-0 top-[calc(100%+12px)] w-64 rounded-[var(--radius-toy)] bg-white p-2 text-ink shadow-[0_20px_40px_-16px_rgb(4_42_43/0.5)]"
+          class="absolute right-0 top-[calc(100%+12px)] max-h-[calc(100dvh-96px)] w-[min(320px,calc(100vw-32px))] overflow-y-auto rounded-[var(--radius-toy)] bg-white p-2 text-ink shadow-[0_20px_40px_-16px_rgb(4_42_43/0.5)]"
         >
           <ul>
             {
-              links.map((l) => (
+              before.map((l) => (
                 <li>
-                  <a
-                    href={l.href}
-                    aria-current={l.current ? "page" : undefined}
-                    class="flex h-12 items-center gap-2 rounded-2xl px-4 font-medium hover:bg-teal-50 aria-[current=page]:bg-teal-100"
-                  >
-                    {l.href === "/adopta" && <PawPrint weight="fill" size={18} className="text-teal-700" aria-hidden="true" />}
-                    {l.label}
+                  <a href={l.href} aria-current={l.current ? "page" : undefined} class={mobileLink}>
+                    {l.brand ? <SubBrand brand={l.brand} /> : l.label}
                   </a>
                 </li>
               ))
             }
             <li>
-              <a href="/#contacto" class="flex h-12 items-center rounded-2xl px-4 font-medium hover:bg-teal-50">Contacto</a>
+              <details class="group/c" open={conectaCurrent}>
+                <summary class:list={[mobileLink, "cursor-pointer list-none justify-between [&::-webkit-details-marker]:hidden"]}>
+                  <SubBrand brand="conecta" />
+                  <CaretDown size={16} weight="bold" className="transition-transform group-open/c:rotate-180" aria-hidden="true" />
+                </summary>
+                <ul class="ml-3 border-l-2 border-teal-100 pl-2">
+                  <li><a href="/maya-conecta" class={mobileLink}>Todo MAYA Conecta</a></li>
+                  {
+                    CONECTA_SECTIONS.map((s) => (
+                      <li>
+                        <a href={s.href} aria-current={path.startsWith(s.href) ? "page" : undefined} class={mobileLink}>
+                          {s.name}
+                          {!s.ready && <span class="ml-auto text-xs text-ink-soft">Pronto</span>}
+                        </a>
+                      </li>
+                    ))
+                  }
+                </ul>
+              </details>
             </li>
+            {
+              after.map((l) => (
+                <li>
+                  <a href={l.href} aria-current={l.current ? "page" : undefined} class={mobileLink}>
+                    {l.brand ? <SubBrand brand={l.brand} /> : l.label}
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </nav>
       </details>
     </div>
   </div>
 </header>
+
+<script>
+  // Cierra los menús desplegables al hacer clic fuera o con Escape.
+  const menus = document.querySelectorAll<HTMLDetailsElement>("details.conecta-menu, details.mobile-menu");
+  document.addEventListener("click", (e) => {
+    menus.forEach((m) => {
+      if (m.open && !m.contains(e.target as Node)) m.open = false;
+    });
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    menus.forEach((m) => {
+      if (m.open) {
+        m.open = false;
+        m.querySelector("summary")?.focus();
+      }
+    });
+  });
+</script>

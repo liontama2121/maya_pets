@@ -373,7 +373,7 @@ export default function DogEditor({ dog }: { dog?: EditorDog }) {
 
       <aside className="xl:sticky xl:top-8 xl:self-start" aria-label="Vista previa y estado">
         <div className="rounded-[var(--radius-toy)] bg-white p-5">
-          <h2 className="font-semibold">Así se ve en Adopta con Maya</h2>
+          <h2 className="font-semibold">Así se ve en Adopta con MAYA</h2>
           <div className="mx-auto mt-4 max-w-[240px]">
             <DogCard dog={preview} asLink={false} />
           </div>
@@ -401,7 +401,7 @@ export default function DogEditor({ dog }: { dog?: EditorDog }) {
             {saving ? "Guardando…" : uploading ? "Esperando fotos…" : dog ? "Guardar cambios" : "Publicar perrito"}
           </button>
           {dog && (
-            <a href={`/adopta/${dog.slug}`} target="_blank" rel="noopener" className="mt-3 block text-center font-medium text-teal-700 underline">
+            <a href={`/maya-conecta/adopta/${dog.slug}`} target="_blank" rel="noopener" className="mt-3 block text-center font-medium text-teal-700 underline">
               Ver en la página
             </a>
           )}

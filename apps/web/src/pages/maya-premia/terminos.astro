@@ -3,7 +3,7 @@
 // Completar los datos marcados con [ ] antes de publicar.
 import { getContest, getSettings } from "@maya/api";
 import Site from "../../layouts/Site.astro";
-import { WHATSAPP_DISPLAY } from "../../lib/format";
+import { CONTACT_WHATSAPP } from "../../lib/format";
 import { envOf } from "../../lib/server";
 
 const { DB } = envOf(Astro);
@@ -59,6 +59,6 @@ const min = settings.minPurchase.toLocaleString("es-CO");
     </p>
 
     <h2>7. Contacto</h2>
-    <p>WhatsApp {WHATSAPP_DISPLAY}. [Correo de contacto].</p>
+    <p>WhatsApp {CONTACT_WHATSAPP.display}. [Correo de contacto].</p>
   </article>
 </Site>

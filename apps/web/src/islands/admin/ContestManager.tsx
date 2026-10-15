@@ -300,7 +300,7 @@ export default function ContestManager({ initialMonth, initialSettings }: { init
                   ))}
                 </div>
                 <p className="hint">
-                  <a href={`/juega/prueba?juego=${form.game}`} target="_blank" className="font-medium text-teal-700 underline">
+                  <a href={`/maya-premia/prueba?juego=${form.game}`} target="_blank" className="font-medium text-teal-700 underline">
                     Probar {GAME_NAME[form.game]}
                   </a>
                 </p>

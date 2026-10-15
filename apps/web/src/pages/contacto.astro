@@ -1,0 +1,43 @@
+---
+import { Clock } from "@phosphor-icons/react/dist/ssr/Clock";
+import { InstagramLogo } from "@phosphor-icons/react/dist/ssr/InstagramLogo";
+import { MapPin } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
+import Site from "../layouts/Site.astro";
+import { CONTACT_WHATSAPP, INSTAGRAM_HANDLE, whatsappLink } from "../lib/format";
+---
+
+<Site title="Contacto" description={`Escríbenos por WhatsApp al ${CONTACT_WHATSAPP.display}. MAYA Pets, tienda para perros y gatos en Bogotá.`}>
+  <section class="on-field bg-[var(--field)] text-white">
+    <div class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 md:py-16">
+      <h1 class="text-5xl font-bold [font-variation-settings:'wght'_760] sm:text-6xl">Contacto</h1>
+      <p class="mt-4 max-w-[46ch] text-xl text-white/90">Pedidos, adopciones, aliados o dudas sobre tu mascota: escríbenos y te respondemos.</p>
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-[1280px] gap-4 px-4 py-12 sm:px-6 md:grid-cols-2">
+    <a href={whatsappLink()} target="_blank" rel="noopener" class="toy group flex items-center gap-5 bg-white p-6 transition-transform hover:-translate-y-0.5 md:col-span-2">
+      <span class="grid size-16 shrink-0 place-items-center rounded-2xl bg-sun-400 text-teal-900 shadow-[inset_0_-4px_0_var(--color-sun-600)]">
+        <WhatsappLogo weight="fill" size={34} aria-hidden="true" />
+      </span>
+      <span>
+        <span class="block text-sm text-ink-soft">WhatsApp</span>
+        <span class="tnum block text-3xl font-bold text-teal-900 [font-variation-settings:'wght'_740]">{CONTACT_WHATSAPP.display}</span>
+        <span class="block text-ink-soft">Toca para escribirnos</span>
+      </span>
+    </a>
+    <div class="rounded-[var(--radius-toy)] bg-white p-6">
+      <p class="flex items-center gap-2 font-semibold"><MapPin size={22} className="text-teal-700" aria-hidden="true" /> Tienda en Bogotá</p>
+      <p class="mt-2 text-ink-soft">La dirección se publica muy pronto.</p>
+      <p class="mt-4 flex items-center gap-2 font-semibold"><Clock size={22} className="text-teal-700" aria-hidden="true" /> Horario</p>
+      <p class="mt-2 text-ink-soft">Muy pronto.</p>
+    </div>
+    <a href={`https://www.instagram.com/${INSTAGRAM_HANDLE}/`} target="_blank" rel="noopener" class="flex items-center gap-4 rounded-[var(--radius-toy)] bg-white p-6 hover:bg-teal-50">
+      <InstagramLogo size={34} className="text-teal-700" aria-hidden="true" />
+      <span>
+        <span class="block text-sm text-ink-soft">Instagram</span>
+        <span class="block text-xl font-semibold">@{INSTAGRAM_HANDLE}</span>
+      </span>
+    </a>
+  </section>
+</Site>

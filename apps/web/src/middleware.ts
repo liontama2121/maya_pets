@@ -2,11 +2,25 @@ import { authConfigured, identifyStaff } from "@maya/api";
 import { defineMiddleware } from "astro:middleware";
 
 /**
+ * Direcciones antiguas → nuevas (301). Conservan la consulta (?codigo=… de los COIN ya enviados).
+ * Se resuelven aquí porque en Pages con Worker no se aplica el archivo _redirects.
+ */
+const LEGACY: [RegExp, string][] = [
+  [/^\/juega(\/.*)?$/, "/maya-premia"],
+  [/^\/adopta(\/.*)?$/, "/maya-conecta/adopta"],
+];
+
+/**
  * /admin: exige sesión (usuario y contraseña de las variables de entorno).
  * Sin sesión → /admin/login. Las rutas /api/admin se validan dentro de la API.
  */
+
 export const onRequest = defineMiddleware(async (ctx, next) => {
   const { pathname } = ctx.url;
+  for (const [re, target] of LEGACY) {
+    const m = pathname.match(re);
+    if (m) return ctx.redirect(`${target}${m[1] ?? ""}${ctx.url.search}`, 301);
+  }
   if (!pathname.startsWith("/admin")) return next();
 
   const env = ctx.locals.runtime.env;
