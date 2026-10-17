@@ -17,6 +17,7 @@ import { z } from "zod";
 import { identifyStaff, login, requireStaff, sessionCookie } from "./middleware/auth";
 import { adminAdopcion, adopcion } from "./routes/adoption";
 import { adminCatalog } from "./routes/admin-catalog";
+import { adminContent } from "./routes/admin-content";
 import { adminSite } from "./routes/admin-site";
 import { adminKids, kids } from "./routes/kids";
 import { adminPromo, juega } from "./routes/promo";
@@ -114,6 +115,7 @@ admin.route("/", adminSite);
 admin.route("/", adminPromo);
 admin.route("/", adminKids);
 admin.route("/", adminAdopcion);
+admin.route("/", adminContent);
 
 app.route("/api/admin", admin);
 
@@ -121,7 +123,7 @@ app.route("/api/admin", admin);
 
 app.get("/media/:folder/:file", async (c) => {
   const key = `${c.req.param("folder")}/${c.req.param("file")}`;
-  if (!/^(productos|categorias|perritos|kids)\/[0-9a-f-]{36}\.(webp|jpg|png|avif)$/.test(key)) {
+  if (!/^(productos|categorias|perritos|kids|contenido)\/[0-9a-f-]{36}\.(webp|jpg|png|avif)$/.test(key)) {
     return c.notFound();
   }
   const obj = await r2Driver(c.env.MEDIA).get(key);
@@ -138,6 +140,7 @@ app.get("/media/:folder/:file", async (c) => {
 
 export type { AppEnv, Bindings } from "./env";
 export * from "./catalog";
+export * from "./content";
 export { getContest, getSettings, leaderboard, monthInBogota } from "./promo";
 export { publicKids, type PublicContest, type PublicEntry } from "./kids";
 export * as adoption from "./adoption";

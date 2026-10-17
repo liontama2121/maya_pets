@@ -1,4 +1,5 @@
 ---
+import type { SiteContent } from "@maya/api";
 import { Heart } from "@phosphor-icons/react/dist/ssr/Heart";
 import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
 import { CONECTA_SECTIONS } from "../../lib/brands";
@@ -6,16 +7,21 @@ import { CONTACT_WHATSAPP, whatsappLink } from "../../lib/format";
 import Logo from "./Logo.astro";
 import SubBrand from "./SubBrand.astro";
 
+interface Props {
+  /** Textos editables desde "Contenido del sitio". */
+  content: SiteContent["footer"];
+}
+const { content } = Astro.props;
 const year = new Date().getFullYear();
 const link = "inline-flex min-h-11 items-center hover:underline";
 ---
 
-<footer class="on-field mt-24 bg-[var(--field)] text-white">
+<footer id="pie" class="on-field mt-24 bg-[var(--field)] text-white">
   <div class="rope mx-auto -mt-[5px] max-w-[1280px] rounded-none sm:rounded-full" aria-hidden="true"></div>
   <div class="mx-auto grid max-w-[1280px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
     <div class="max-w-sm">
       <Logo height={84} />
-      <p class="mt-4 text-white/80">Tienda para perros y gatos en Bogotá, con una perrita imaginaria que guía a toda la familia.</p>
+      <p class="mt-4 text-white/80">{content.tagline}</p>
     </div>
 
     <nav aria-label="Tienda y programas">
@@ -39,7 +45,7 @@ const link = "inline-flex min-h-11 items-center hover:underline";
 
     <div>
       <h2 class="text-base font-semibold text-white"><a href="/contacto" class="hover:underline">Contacto</a></h2>
-      <p class="mt-3 text-white/80">Respondemos por WhatsApp. Dirección y horario de la tienda: muy pronto.</p>
+      <p class="mt-3 text-white/80">{content.contactNote}</p>
       <a href={whatsappLink()} target="_blank" rel="noopener" class="btn btn-sun mt-4">
         <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
         {CONTACT_WHATSAPP.display}

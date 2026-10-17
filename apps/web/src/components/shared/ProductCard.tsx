@@ -10,10 +10,13 @@ export function ProductCard({
   product,
   priority = false,
   asLink = true,
+  showPrice = true,
 }: {
   product: ProductCardData;
   priority?: boolean;
   asLink?: boolean;
+  /** El banner de temporada puede mostrar productos sin precio. */
+  showPrice?: boolean;
 }) {
   const soldOut = product.stock <= 0;
   const discount =
@@ -44,7 +47,7 @@ export function ProductCard({
           <span className="absolute left-3 top-3 rounded-full bg-ink px-3 py-1 text-sm font-semibold text-white">
             Agotado
           </span>
-        ) : discount > 0 ? (
+        ) : discount > 0 && showPrice ? (
           <span className="absolute left-3 top-3 rounded-full bg-[var(--accent)] px-3 py-1 text-sm font-bold text-[var(--on-accent)] shadow-[inset_0_-3px_0_var(--accent-lip)]">
             -{discount}%
           </span>
@@ -59,15 +62,17 @@ export function ProductCard({
         <h3 className="text-[1.0625rem] font-medium leading-snug text-ink [font-variation-settings:'wght'_500] group-hover:text-teal-700">
           {product.name}
         </h3>
-        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-1">
-          <span className="price text-lg text-teal-900">
-            {product.variantCount > 1 && <span className="mr-1 text-sm font-normal text-ink-soft">desde</span>}
-            {formatCOP(product.priceFrom)}
-          </span>
-          {discount > 0 && (
-            <span className="text-sm text-ink-soft line-through tnum">{formatCOP(product.compareAt!)}</span>
-          )}
-        </div>
+        {showPrice && (
+          <div className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-1">
+            <span className="price text-lg text-teal-900">
+              {product.variantCount > 1 && <span className="mr-1 text-sm font-normal text-ink-soft">desde</span>}
+              {formatCOP(product.priceFrom)}
+            </span>
+            {discount > 0 && (
+              <span className="text-sm text-ink-soft line-through tnum">{formatCOP(product.compareAt!)}</span>
+            )}
+          </div>
+        )}
         {!soldOut && product.lowStock && <p className="text-sm font-medium text-danger">Quedan pocas unidades</p>}
       </div>
     </>

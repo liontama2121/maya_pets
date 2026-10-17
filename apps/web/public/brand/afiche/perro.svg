@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-labelledby="t">
+  <title id="t">Perrito sentado con collar verde</title>
+  <g stroke="#073F40" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- cola -->
+    <path d="M300 392c46-6 70-40 62-86" fill="none" stroke-width="30"/>
+    <path d="M300 392c46-6 70-40 62-86" fill="none" stroke="#FBF3E4" stroke-width="18"/>
+    <!-- patas traseras -->
+    <ellipse cx="128" cy="398" rx="68" ry="54" fill="#FBF3E4"/>
+    <ellipse cx="272" cy="398" rx="68" ry="54" fill="#FBF3E4"/>
+    <!-- cuerpo -->
+    <path d="M200 196c-74 0-102 104-94 204h188c8-100-20-204-94-204z" fill="#FBF3E4"/>
+    <ellipse cx="200" cy="306" rx="46" ry="70" fill="#FFFFFF" stroke="none"/>
+    <!-- patas delanteras -->
+    <rect x="150" y="320" width="38" height="118" rx="19" fill="#FBF3E4"/>
+    <rect x="212" y="320" width="38" height="118" rx="19" fill="#FBF3E4"/>
+    <ellipse cx="166" cy="440" rx="28" ry="15" fill="#FFFFFF"/>
+    <ellipse cx="234" cy="440" rx="28" ry="15" fill="#FFFFFF"/>
+    <!-- collar -->
+    <rect x="134" y="214" width="132" height="24" rx="12" fill="#0F6267"/>
+    <circle cx="200" cy="254" r="15" fill="#FECA0C"/>
+    <!-- orejas -->
+    <path d="M128 92c-46 6-62 92-30 132 26-10 40-62 46-110z" fill="#C98B4B"/>
+    <path d="M272 92c46 6 62 92 30 132-26-10-40-62-46-110z" fill="#C98B4B"/>
+    <!-- cabeza -->
+    <ellipse cx="200" cy="146" rx="90" ry="82" fill="#FBF3E4"/>
+  </g>
+  <!-- mancha del ojo -->
+  <ellipse cx="240" cy="128" rx="28" ry="26" fill="#C98B4B"/>
+  <!-- hocico -->
+  <ellipse cx="200" cy="184" rx="50" ry="36" fill="#FFFFFF" stroke="#073F40" stroke-width="5"/>
+  <path d="M188 214c4 16 20 16 24 0z" fill="#F2789F" stroke="#073F40" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M200 176v18m0 0c-8 10-20 8-25-1m25 1c8 10 20 8 25-1" fill="none" stroke="#073F40" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="200" cy="168" rx="17" ry="12" fill="#073F40"/>
+  <ellipse cx="195" cy="164" rx="5" ry="3" fill="#FFFFFF" opacity=".7"/>
+  <!-- ojos -->
+  <circle cx="164" cy="132" r="11" fill="#073F40"/>
+  <circle cx="240" cy="132" r="11" fill="#073F40"/>
+  <circle cx="168" cy="128" r="3.5" fill="#FFFFFF"/>
+  <circle cx="244" cy="128" r="3.5" fill="#FFFFFF"/>
+  <!-- cejas -->
+  <path d="M150 108c8-6 20-6 28 0M226 108c8-6 20-6 28 0" fill="none" stroke="#073F40" stroke-width="5" stroke-linecap="round"/>
+  <!-- huella en la placa -->
+  <g fill="#073F40">
+    <ellipse cx="200" cy="258" rx="5.5" ry="4.5"/>
+    <circle cx="192" cy="250" r="2.6"/>
+    <circle cx="200" cy="247" r="2.6"/>
+    <circle cx="208" cy="250" r="2.6"/>
+  </g>
+</svg>

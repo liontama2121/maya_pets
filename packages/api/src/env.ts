@@ -12,8 +12,7 @@ export interface Bindings {
   /** Texto al azar de 32+ caracteres que firma la sesión (secreto). */
   SESSION_SECRET?: string;
   /** Nombre que muestra el panel, p. ej. "Luisa". */
-  ADMIN_NAME?: string;
-  /** Token de la API de Instagram (cuenta profesional de MAYA) para contar likes de MAYA Kids. */
+  ADMIN_NAME?: string;  /** Token de la API de Instagram (cuenta profesional de MAYA) para contar likes de MAYA Kids. */
   INSTAGRAM_ACCESS_TOKEN?: string;
   /** Opcional: base de la API (por defecto https://graph.instagram.com). */
   INSTAGRAM_GRAPH_URL?: string;

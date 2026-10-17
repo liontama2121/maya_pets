@@ -5,7 +5,7 @@ import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
 import { SEASON_SLUGS, seasonEvents, staffUsers } from "../db/schema";
 import type { AppEnv } from "../env";
-import { requireRole } from "../middleware/auth";
+import { hashPassword, requireRole } from "../middleware/auth";
 import { seasonInput, staffInput } from "../schemas";
 import { isSeasonLive, SEASON_PRESETS } from "../seasons";
 import { r2Driver } from "../storage/r2";
@@ -74,10 +74,10 @@ const MAX_BYTES = 4 * 1024 * 1024;
  * El navegador ya redimensiona y convierte a WebP antes de subir (Workers no tiene sharp).
  * Aquí solo validamos tipo y tamaño y guardamos en R2.
  */
-adminSite.post("/uploads", requireRole("admin", "adopciones"), async (c) => {
+adminSite.post("/uploads", requireRole("admin", "adopciones", "editor"), async (c) => {
   const form = await c.req.formData();
   const file = form.get("file");
-  const folder = form.get("folder") === "perritos" ? "perritos" : form.get("folder") === "categorias" ? "categorias" : "productos";
+  const folder = (["perritos", "categorias", "contenido"] as const).find((f) => f === form.get("folder")) ?? "productos";
   if (!(file instanceof File)) throw new HTTPException(400, { message: "No llegó ninguna foto." });
   const ext = ALLOWED.get(file.type);
   if (!ext) throw new HTTPException(415, { message: "Sube la foto en JPG, PNG o WebP." });
@@ -101,17 +101,24 @@ adminSite.post("/uploads", requireRole("admin", "adopciones"), async (c) => {
 
 /* ------------------------- Personal del panel ------------------------ */
 
+/** La contraseña cifrada nunca sale de la API; solo se informa si la cuenta tiene una. */
+const publicStaff = ({ passwordHash, ...r }: typeof staffUsers.$inferSelect) => ({ ...r, hasPassword: Boolean(passwordHash) });
+
 adminSite.get("/staff", requireRole("admin"), async (c) => {
-  return c.json(await c.get("db").select().from(staffUsers).orderBy(asc(staffUsers.name)));
+  const rows = await c.get("db").select().from(staffUsers).orderBy(asc(staffUsers.name));
+  return c.json(rows.map(publicStaff));
 });
 
 adminSite.post("/staff", requireRole("admin"), zValidator("json", staffInput, onFail), async (c) => {
-  const input = c.req.valid("json");
+  const { password, ...input } = c.req.valid("json");
+  if (!password) {
+    throw new HTTPException(400, { message: "Revisa los campos marcados.", cause: { password: ["Crea una contraseña para esta persona"] } });
+  }
   const db = c.get("db");
   const exists = await db.query.staffUsers.findFirst({ where: eq(staffUsers.email, input.email) });
   if (exists) throw new HTTPException(409, { message: "Ese correo ya tiene acceso." });
-  const [row] = await db.insert(staffUsers).values(input).returning();
-  return c.json(row, 201);
+  const [row] = await db.insert(staffUsers).values({ ...input, passwordHash: await hashPassword(password) }).returning();
+  return c.json(publicStaff(row!), 201);
 });
 
 adminSite.put(
@@ -120,13 +127,15 @@ adminSite.put(
   zValidator("json", staffInput, onFail),
   async (c) => {
     const id = Number(c.req.param("id"));
-    const input = c.req.valid("json");
+    const { password, ...input } = c.req.valid("json");
     const me = c.get("staff");
     if (id === me.id && (!input.active || !input.roles.includes("admin"))) {
       throw new HTTPException(409, { message: "No puedes quitarte a ti misma el acceso de administradora." });
     }
-    const [row] = await c.get("db").update(staffUsers).set(input).where(eq(staffUsers.id, id)).returning();
+    // Contraseña vacía = se deja la que tenía. Cambiarla cierra sus sesiones abiertas.
+    const values = password ? { ...input, passwordHash: await hashPassword(password) } : input;
+    const [row] = await c.get("db").update(staffUsers).set(values).where(eq(staffUsers.id, id)).returning();
     if (!row) throw new HTTPException(404, { message: "Esa persona ya no está en la lista." });
-    return c.json(row);
+    return c.json(publicStaff(row));
   },
 );

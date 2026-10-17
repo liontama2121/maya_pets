@@ -1,0 +1,29 @@
+---
+import { hasRole } from "@maya/api";
+import ContentEditor, { type Block } from "../../islands/admin/ContentEditor";
+import Admin from "../../layouts/Admin.astro";
+import { adminFetch } from "../../lib/admin-server";
+
+if (!hasRole(Astro.locals.staff!, "editor")) return Astro.redirect("/admin");
+const [blocks, categories] = await Promise.all([
+  adminFetch<Block[]>(Astro, "/content"),
+  adminFetch<{ slug: string; name: string; active: boolean }[]>(Astro, "/categories"),
+]);
+const initialKey = Astro.url.searchParams.get("bloque");
+---
+
+<Admin title="Contenido del sitio">
+  <h1 class="text-3xl font-bold [font-variation-settings:'wght'_720]">Contenido del sitio</h1>
+  <p class="mt-1 max-w-2xl text-ink-soft">
+    Cambia textos e imágenes del inicio, el footer y la página de Nosotros. Guarda, mira la vista previa y publica: el
+    sitio se actualiza al instante.
+  </p>
+  <div class="mt-6">
+    <ContentEditor
+      client:load
+      initial={blocks}
+      initialKey={initialKey}
+      categories={categories.filter((c) => c.active).map(({ slug, name }) => ({ slug, name }))}
+    />
+  </div>
+</Admin>

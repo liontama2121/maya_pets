@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { liveSeason, type LiveSeason } from "@maya/api";
+import { liveSeason, loadContent, type LiveSeason, type SiteContent } from "@maya/api";
 import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
 import { WhatsappLogo } from "@phosphor-icons/react/dist/ssr/WhatsappLogo";
 import { Ghost } from "@phosphor-icons/react/dist/ssr/Ghost";
@@ -20,11 +20,15 @@ interface Props {
   /** Si la página ya consultó la temporada, la pasa para no repetir la consulta. */
   season?: LiveSeason | null;
   noindex?: boolean;
+  /** Si la página ya cargó el contenido editable, lo pasa (footer incluido). */
+  content?: SiteContent;
 }
 
 const { title, description, image = "/brand/og-maya.png", noindex = false } = Astro.props;
 const season = Astro.props.season !== undefined ? Astro.props.season : await liveSeason(envOf(Astro).DB);
 const preset = season?.preset;
+const draft = Boolean(Astro.locals.contentDraft);
+const content = Astro.props.content ?? (await loadContent(envOf(Astro).DB, draft));
 
 const fullTitle = title.includes("MAYA Pets") ? title : `${title} | MAYA Pets Bogotá`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -55,7 +59,7 @@ const jsonLd = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {(noindex || draft) && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content={preset?.field ?? "#0f6267"} />
     <link rel="icon" href="/brand/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
@@ -104,7 +108,18 @@ const jsonLd = {
       <slot />
     </main>
 
-    <Footer />
+    <Footer content={content.footer} />
+
+    {
+      draft && (
+        <p
+          role="status"
+          class="fixed bottom-4 left-4 z-50 rounded-full bg-sun-400 px-4 py-2 text-sm font-semibold text-teal-900 shadow-[inset_0_-3px_0_var(--color-sun-600),0_12px_24px_-10px_rgb(4_42_43/0.6)]"
+        >
+          Vista previa del borrador · el público no la ve
+        </p>
+      )
+    }
 
     <a
       href={whatsappLink()}

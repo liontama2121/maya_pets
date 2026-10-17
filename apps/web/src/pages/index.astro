@@ -1,51 +1,89 @@
 ---
-import { featuredProducts, listCategories, liveSeason } from "@maya/api";
+import { bannerProducts, bestSellers, isBannerLive, listCategories, liveSeason, loadContent } from "@maya/api";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { Cat } from "@phosphor-icons/react/dist/ssr/Cat";
-import { Dog } from "@phosphor-icons/react/dist/ssr/Dog";
 import { PawPrint } from "@phosphor-icons/react/dist/ssr/PawPrint";
 import { ProductCard } from "../components/shared/ProductCard";
 import { SeasonBanner } from "../components/shared/SeasonBanner";
 import Site from "../layouts/Site.astro";
 import { envOf } from "../lib/server";
 
+/**
+ * Inicio. Todos los textos e imágenes salen de "Contenido del sitio" (panel → /admin/contenido).
+ * Con ?borrador=1 y sesión de editor se ven los borradores (vista previa).
+ */
 const { DB } = envOf(Astro);
-const [season, featured, categories] = await Promise.all([liveSeason(DB), featuredProducts(DB, 8), listCategories(DB)]);
-const seasonProducts = season?.products ?? [];
+const content = await loadContent(DB, Astro.locals.contentDraft);
+const { hero, banner, especies, destacados } = content;
+const bannerLive = Astro.locals.contentDraft ? banner.enabled : isBannerLive(banner);
+
+const [season, featured, categories, bannerItems] = await Promise.all([
+  liveSeason(DB),
+  bestSellers(DB, destacados.pinnedIds, 8),
+  listCategories(DB),
+  bannerLive ? bannerProducts(DB, banner) : Promise.resolve([]),
+]);
 const dogCats = categories.filter((c) => c.species !== "gato");
 const catCats = categories.filter((c) => c.species !== "perro");
+
+// "Maya" del título va en el color de acento, donde aparezca.
+const titleParts = hero.title.split(/(Maya)/);
+
+const cards = [
+  { key: "perro", data: especies.dog, href: "/tienda?especie=perro", cats: dogCats, tone: "bg-teal-100", tilt: "group-hover:-rotate-3" },
+  { key: "gato", data: especies.cat, href: "/tienda?especie=gato", cats: catCats, tone: "bg-sun-100", tilt: "group-hover:rotate-3" },
+] as const;
 ---
 
 <Site
   title="MAYA Pets | Tienda para perros y gatos en Bogotá"
-  description="Alimento, collares, correas, platos, snacks y premios para tu perro o gato en Bogotá. Y perritos en adopción que buscan familia."
+  description="Alimento, collares, correas, platos, snacks y premios para tu perro o gato en Bogotá."
   season={season}
+  content={content}
 >
-  <!-- Hero: Maya es invisible. Solo se ven su sombra y sus huellas; sigue al cursor. -->
-  <section class="on-field relative overflow-hidden bg-[var(--field)] text-white" data-hero>
+  <!-- Hero: Maya saluda en primera persona. Es invisible: solo se ven su sombra y sus huellas, que siguen al cursor. -->
+  <section class="on-field relative overflow-hidden bg-[var(--field)] text-white" data-hero aria-labelledby="hola">
     <div
-      class="relative z-10 mx-auto grid min-h-[min(640px,calc(100dvh-68px))] max-w-[1280px] items-center gap-4 px-4 py-12 sm:px-6 md:grid-cols-[1.1fr_1fr] md:py-16"
+      class="hero-grid relative z-10 mx-auto grid min-h-[min(680px,calc(100dvh-72px))] max-w-[1280px] grid-cols-2 items-end gap-x-2 px-4 pt-12 sm:px-6 md:pt-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,600px)_minmax(0,1fr)] lg:gap-x-6"
     >
-      <div class="max-w-xl">
+      <div class="[grid-area:text] self-center pb-6 text-center lg:pb-16">
         <h1
+          id="hola"
           data-enter
-          class="text-5xl font-bold leading-[1.02] [font-variation-settings:'wght'_760] sm:text-6xl lg:text-7xl"
+          class="text-5xl font-bold leading-[1] tracking-[-0.02em] [font-variation-settings:'wght'_780] [text-wrap:balance] sm:text-6xl lg:text-7xl"
         >
-          Mi mascota, <span class="text-[var(--accent)]">mi familia</span>
+          {titleParts.map((part) => (part === "Maya" ? <span class="text-[var(--accent)]">{part}</span> : part))}
         </h1>
-        <p data-enter class="mt-5 max-w-md text-lg text-white/90 sm:text-xl">
-          Comida, paseos y premios para tu perro o gato. Y perritos que buscan una familia como la tuya.
+        <p data-enter class="mx-auto mt-6 max-w-[46ch] text-lg leading-relaxed text-white/90 sm:text-xl">
+          {hero.text}
         </p>
-        <div data-enter class="mt-8 flex flex-wrap gap-3">
-          <a href="/tienda" class="btn btn-sun text-lg">Ver la tienda</a>
-          <a href="/maya-conecta/adopta" class="btn btn-ghost-light text-lg">
-            <PawPrint weight="fill" size={20} aria-hidden="true" />
-            Adopta con MAYA
+        <div data-enter class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+          <a href={hero.ctaHref} class="btn btn-sun text-lg">{hero.ctaLabel}</a>
+          <a
+            href={hero.storyHref}
+            class="group inline-flex min-h-11 items-center gap-2 font-semibold text-white underline decoration-[var(--accent)] decoration-2 underline-offset-[6px] hover:decoration-4"
+          >
+            {hero.storyLabel}
+            <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
           </a>
         </div>
+        <!-- Donde Maya se sienta al cargar: debajo de lo que dice, con aire para que su globo no tape los enlaces. -->
+        <div data-maya-home class="mx-auto mt-16 h-10 w-24" aria-hidden="true"></div>
       </div>
-      <!-- Donde Maya descansa al cargar -->
-      <div data-maya-home class="h-[220px] md:h-[420px]" aria-hidden="true"></div>
+
+      {
+        hero.imageLeft.src && (
+          <figure data-enter class="hero-pet [grid-area:left] justify-self-start sm:justify-self-center lg:justify-self-end">
+            <img src={hero.imageLeft.src} alt={hero.imageLeft.alt} width="400" height="480" fetchpriority="high" decoding="async" />
+          </figure>
+        )
+      }
+      {
+        hero.imageRight.src && (
+          <figure data-enter class="hero-pet hero-pet--right [grid-area:right] justify-self-end sm:justify-self-center lg:justify-self-start">
+            <img src={hero.imageRight.src} alt={hero.imageRight.alt} width="400" height="480" decoding="async" />
+          </figure>
+        )
+      }
     </div>
 
     <!-- Capa de Maya: decorativa, no bloquea clics -->
@@ -60,81 +98,69 @@ const catCats = categories.filter((c) => c.species !== "perro");
         <span data-maya-bubble data-show="false" class="maya-bubble"></span>
       </div>
     </div>
-    <p class="sr-only">Maya, la perrita invisible de la tienda, camina por aquí. Solo se ven su sombra y sus huellas.</p>
   </section>
 
-  <!-- Perros / Gatos -->
+  <!-- ¿Quién te espera en casa? -->
   <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-labelledby="especies">
-    <h2 id="especies" class="max-w-xl text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
-      ¿Quién te espera en casa?
+    <h2 id="especies" class="max-w-xl scroll-mt-28 text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
+      {especies.title}
     </h2>
-    <div class="mt-8 grid gap-5 md:grid-cols-[1.4fr_1fr]">
-      <a
-        href="/tienda?especie=perro"
-        class="toy group relative flex min-h-[300px] flex-col justify-between overflow-hidden bg-teal-100 p-6 sm:p-8"
-      >
-        <Dog
-          weight="duotone"
-          size={220}
-          className="pointer-events-none absolute -bottom-6 -right-4 text-teal-700 transition-transform duration-500 ease-[var(--ease-squish)] group-hover:-rotate-6 group-hover:scale-105"
-          aria-hidden="true"
-        />
-        <div>
-          <h3 class="text-4xl font-bold text-teal-900 [font-variation-settings:'wght'_720]">Perros</h3>
-          <p class="mt-2 max-w-[28ch] text-ink-soft">Del cachorro inquieto al abuelo que ya solo quiere sofá.</p>
-        </div>
-        <ul class="relative mt-6 flex max-w-[70%] flex-wrap gap-2" aria-label="Categorías para perros">
-          {dogCats.map((c) => <li class="rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-teal-900">{c.name}</li>)}
-        </ul>
-        <span class="relative mt-6 inline-flex items-center gap-2 font-semibold text-teal-900">
-          Ver todo para perros
-          <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
-        </span>
-      </a>
-
-      <a
-        href="/tienda?especie=gato"
-        class="toy group relative flex min-h-[300px] flex-col justify-between overflow-hidden bg-sun-100 p-6 sm:p-8"
-      >
-        <Cat
-          weight="duotone"
-          size={190}
-          className="pointer-events-none absolute -bottom-4 -right-2 text-sun-600 transition-transform duration-500 ease-[var(--ease-squish)] group-hover:rotate-6 group-hover:scale-105"
-          aria-hidden="true"
-        />
-        <div>
-          <h3 class="text-4xl font-bold text-teal-900 [font-variation-settings:'wght'_720]">Gatos</h3>
-          <p class="mt-2 max-w-[24ch] text-ink-soft">Para los que mandan en la casa y lo saben.</p>
-        </div>
-        <ul class="relative mt-6 flex max-w-[70%] flex-wrap gap-2" aria-label="Categorías para gatos">
-          {catCats.map((c) => <li class="rounded-full bg-white/80 px-3 py-1.5 text-sm font-medium text-teal-900">{c.name}</li>)}
-        </ul>
-        <span class="relative mt-6 inline-flex items-center gap-2 font-semibold text-teal-900">
-          Ver todo para gatos
-          <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
-        </span>
-      </a>
+    <div class="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
+      {
+        cards.map(({ data, href, cats, tone, tilt }) => (
+          <a href={href} class:list={["toy group relative flex min-h-[340px] flex-col overflow-hidden p-6 sm:p-8", tone]}>
+            {data.image.src && (
+              <img
+                src={data.image.src}
+                alt=""
+                width="400"
+                height="480"
+                loading="lazy"
+                decoding="async"
+                class:list={[
+                  // Celular y tableta: arriba a la derecha, junto al título. Escritorio: grande, sentado en el borde.
+                  "pointer-events-none absolute right-3 top-4 h-36 w-auto transition-transform duration-500 ease-[var(--ease-squish)] group-hover:scale-105 sm:h-44 lg:top-auto lg:-bottom-3 lg:right-6 lg:h-[78%] lg:max-h-[300px]",
+                  tilt,
+                ]}
+              />
+            )}
+            <div class="relative min-h-36 max-w-[56%] sm:min-h-44 sm:max-w-[60%] lg:min-h-0">
+              <h3 class="text-4xl font-bold text-teal-900 [font-variation-settings:'wght'_720]">{data.title}</h3>
+              <p class="mt-2 text-ink-soft">{data.text}</p>
+            </div>
+            <ul class="relative mt-6 flex flex-wrap gap-2 lg:max-w-[58%]" aria-label={`Categorías: ${data.title}`}>
+              {cats.map((c) => (
+                <li class="rounded-full bg-white/85 px-3 py-1.5 text-sm font-medium text-teal-900">{c.name}</li>
+              ))}
+            </ul>
+            <span class="relative mt-auto inline-flex items-center gap-2 pt-6 font-semibold text-teal-900">
+              {data.linkLabel}
+              <ArrowRight weight="bold" size={18} className="transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </span>
+          </a>
+        ))
+      }
     </div>
   </section>
 
   {
-    season && (
-      <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-label={`Colección de ${season.preset.name}`}>
+    bannerLive && (
+      <section id="temporada" class="mx-auto max-w-[1280px] scroll-mt-28 px-4 pt-16 sm:px-6 md:pt-24">
         <SeasonBanner
-          preset={season.preset}
+          preset={season?.preset ?? null}
           data={{
-            headline: season.event.headline,
-            message: season.event.message,
-            ctaLabel: season.event.ctaLabel,
-            categorySlug: season.event.categorySlug,
-            discountNote: season.event.discountNote,
+            title: banner.title,
+            subtitle: banner.subtitle,
+            ctaLabel: banner.ctaLabel,
+            href: banner.ctaHref,
+            image: banner.image,
           }}
         />
-        {seasonProducts.length > 0 && (
+        {bannerItems.length > 0 && (
           <ul class="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-4">
-            {seasonProducts.slice(0, 4).map((p) => (
+            {bannerItems.map((p) => (
               <li>
-                <ProductCard product={p} />
+                <ProductCard product={p} showPrice={banner.showPrices} />
               </li>
             ))}
           </ul>
@@ -143,19 +169,21 @@ const catCats = categories.filter((c) => c.species !== "perro");
     )
   }
 
-  <!-- Lo que más se llevan -->
+  <!-- Lo que más se llevan: fijados + más vendidos 30 días + destacados -->
   <section class="pt-16 md:pt-24" aria-labelledby="destacados">
     <div class="mx-auto flex max-w-[1280px] items-end justify-between gap-4 px-4 sm:px-6">
-      <h2 id="destacados" class="text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">Lo que más se llevan</h2>
+      <h2 id="destacados" class="scroll-mt-28 text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
+        {destacados.title}
+      </h2>
       <a href="/tienda" class="hidden shrink-0 font-semibold text-teal-700 hover:underline sm:inline">Ver toda la tienda</a>
     </div>
     <ul
       class="mx-auto mt-8 flex max-w-[1280px] snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:thin] sm:px-6 lg:grid lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10 lg:overflow-visible"
     >
       {
-        featured.map((p, i) => (
+        featured.map((p) => (
           <li class="w-[68%] shrink-0 snap-start sm:w-[42%] lg:w-auto">
-            <ProductCard product={p} priority={i < 2} />
+            <ProductCard product={p} />
           </li>
         ))
       }
@@ -164,56 +192,50 @@ const catCats = categories.filter((c) => c.species !== "perro");
       <a href="/tienda" class="btn btn-soft w-full">Ver toda la tienda</a>
     </div>
   </section>
-
-  <!-- Adopción: la sección más importante -->
-  <section class="mx-auto max-w-[1280px] px-4 pt-16 sm:px-6 md:pt-24" aria-labelledby="adopta">
-    <div class="on-accent toy relative overflow-hidden bg-[var(--color-sun-400)] px-6 py-12 text-teal-900 sm:px-12 sm:py-16">
-      <div class="paw-walk pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 md:block" aria-hidden="true">
-        {
-          Array.from({ length: 7 }, (_, i) => (
-            <PawPrint
-              weight="fill"
-              size={34}
-              className="absolute text-teal-900/15"
-              style={{ left: `${12 + i * 12}%`, top: `${70 - i * 9 + (i % 2) * 8}%`, transform: `rotate(${35 + (i % 2 ? 10 : -10)}deg)` }}
-            />
-          ))
-        }
-      </div>
-      <div class="relative max-w-2xl">
-        <h2 id="adopta" class="text-4xl font-bold leading-[1.05] [font-variation-settings:'wght'_760] sm:text-5xl">
-          Adopta con MAYA
-        </h2>
-        <p class="mt-4 max-w-[46ch] text-lg sm:text-xl">
-          Maya es una perrita imaginaria. Los perritos que te presenta son muy reales y esperan una familia. Ella te
-          ayuda a encontrar el que encaja con tu casa.
-        </p>
-        <a href="/maya-conecta/adopta" class="btn btn-teal mt-8 text-lg">
-          Conoce a los perritos
-          <ArrowRight weight="bold" size={20} aria-hidden="true" />
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- La historia -->
-  <section class="mx-auto max-w-3xl px-4 pt-20 text-center sm:px-6 md:pt-28" aria-labelledby="historia">
-    <PawPrint weight="fill" size={36} className="mx-auto text-teal-700" aria-hidden="true" />
-    <h2 id="historia" class="mt-4 text-3xl font-bold [font-variation-settings:'wght'_700] sm:text-4xl">
-      Una perrita que solo una niña podía ver
-    </h2>
-    <p class="mx-auto mt-4 max-w-[52ch] text-lg text-ink-soft">
-      Maya nació en la imaginación de la hija de los fundadores. Nadie más la veía, pero todos sabían cuándo había pasado
-      por ahí. Así nació la tienda: para que cada mascota tenga lo que necesita y cada perrito, una familia.
-    </p>
-    <a href="/nosotros" class="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-teal-700 hover:underline">
-      Leer la historia de Maya
-      <ArrowRight weight="bold" size={18} aria-hidden="true" />
-    </a>
-  </section>
 </Site>
 
 <style>
+  /* Móvil: texto arriba, perrito y gatico abajo. Escritorio: los dos enmarcan el texto. */
+  .hero-grid {
+    grid-template-areas:
+      "text text"
+      "left right";
+  }
+  @media (min-width: 1024px) {
+    .hero-grid {
+      grid-template-areas: "left text right";
+    }
+  }
+  .hero-pet {
+    margin: 0;
+    width: min(100%, 190px);
+  }
+  .hero-pet img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Se apoyan en el borde inferior del hero, como sentados en el piso. */
+    margin-bottom: -6px;
+    filter: drop-shadow(0 18px 18px rgb(3 28 29 / 0.35));
+  }
+  @media (min-width: 640px) {
+    .hero-pet {
+      width: min(100%, 230px);
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-pet {
+      width: min(100%, 320px);
+    }
+    .hero-pet img {
+      transform: rotate(-3deg);
+      transform-origin: 50% 100%;
+    }
+    .hero-pet--right img {
+      transform: rotate(3deg);
+    }
+  }
+
   /* La sombra de un perro sentado: lo único visible de Maya. */
   .maya-body {
     width: 0;

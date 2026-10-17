@@ -160,12 +160,12 @@ export const seasonEvents = sqliteTable(
   (t) => [uniqueIndex("season_slug_uq").on(t.slug)],
 );
 
-export const STAFF_ROLES = ["admin", "vendedor", "adopciones"] as const;
+export const STAFF_ROLES = ["admin", "vendedor", "adopciones", "editor"] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
 /**
- * Personal con acceso al panel. Cloudflare Access autentica (correo);
- * esta tabla autoriza (roles). Sin fila activa = sin acceso aunque Access deje pasar.
+ * Equipo con acceso al panel: el correo es el usuario y la contraseña se guarda cifrada (PBKDF2).
+ * La dueña entra además con la cuenta de las variables de entorno. Sin fila activa = sin acceso.
  */
 export const staffUsers = sqliteTable(
   "staff_users",
@@ -175,6 +175,8 @@ export const staffUsers = sqliteTable(
     name: text("name").notNull(),
     roles: text("roles", { mode: "json" }).$type<StaffRole[]>().notNull(),
     active: integer("active", { mode: "boolean" }).notNull().default(true),
+    /** `pbkdf2$iteraciones$sal$hash`. Nunca sale de la API. */
+    passwordHash: text("password_hash"),
     createdAt: text("created_at").notNull().default(now),
     lastSeenAt: text("last_seen_at"),
   },
@@ -465,3 +467,37 @@ export const adoptionNotes = sqliteTable(
 
 export type Dog = typeof dogs.$inferSelect;
 export type AdoptionRequest = typeof adoptionRequests.$inferSelect;
+
+/* --------------------------- Contenido del sitio --------------------------- */
+
+/** Bloques de texto e imágenes que MAYA edita desde el panel (inicio, footer, Nosotros). */
+export const CONTENT_KEYS = ["hero", "banner", "especies", "destacados", "footer", "nosotros"] as const;
+export type ContentKey = (typeof CONTENT_KEYS)[number];
+
+/**
+ * Cada bloque tiene borrador (lo que se edita y se ve en la vista previa) y publicado (lo que ve el público).
+ * "Publicar" copia el borrador al publicado y guarda una versión.
+ */
+export const contentBlocks = sqliteTable("content_blocks", {
+  key: text("key", { enum: CONTENT_KEYS }).primaryKey(),
+  draft: text("draft", { mode: "json" }).notNull(),
+  published: text("published", { mode: "json" }).notNull(),
+  updatedAt: text("updated_at").notNull().default(now),
+  updatedBy: text("updated_by"),
+  publishedAt: text("published_at"),
+  publishedBy: text("published_by"),
+});
+
+/** Historial de publicaciones de cada bloque. No se borra: restaurar crea una versión nueva. */
+export const contentVersions = sqliteTable(
+  "content_versions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    key: text("key", { enum: CONTENT_KEYS }).notNull(),
+    data: text("data", { mode: "json" }).notNull(),
+    note: text("note").notNull().default(""),
+    createdAt: text("created_at").notNull().default(now),
+    createdBy: text("created_by").notNull(),
+  },
+  (t) => [index("content_versions_key_idx").on(t.key, t.createdAt)],
+);

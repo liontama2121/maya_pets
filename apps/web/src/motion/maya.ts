@@ -119,7 +119,8 @@ export function initMayaFollow(opts: {
   const hush = () => {
     bubble.dataset.show = "false";
   };
-  const GREETING = "Hola, soy Maya. No me ves, pero aquí estoy.";
+  // El título del inicio ya dice "Hola, soy Maya": el globo completa la frase.
+  const GREETING = "No me ves, pero aquí estoy.";
 
   // Sin movimiento: sentada en su sitio desde el principio.
   if (reduceMotion()) {

@@ -99,6 +99,13 @@ export const staffInput = z.object({
   name: text(60).min(2),
   roles: z.array(z.enum(STAFF_ROLES)).min(1, "Elige al menos un rol"),
   active: z.boolean().default(true),
+  /** Obligatoria al crear; al editar, vacía = no se cambia. */
+  password: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((v) => (v ? v : undefined))
+    .refine((v) => v === undefined || v.length >= 10, "Usa al menos 10 caracteres"),
 });
 
 export const catalogQuery = z.object({

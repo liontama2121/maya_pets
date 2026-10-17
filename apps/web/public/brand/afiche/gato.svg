@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-labelledby="t">
+  <title id="t">Gatico sentado con cascabel amarillo</title>
+  <g stroke="#073F40" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- cola -->
+    <path d="M276 428c66 6 92-50 68-108-10-24-6-44 10-56" fill="none" stroke-width="32"/>
+    <path d="M276 428c66 6 92-50 68-108-10-24-6-44 10-56" fill="none" stroke="#FDD86A" stroke-width="20"/>
+    <!-- cuerpo -->
+    <path d="M200 204c-70 0-90 120-80 230h160c10-110-10-230-80-230z" fill="#FDD86A"/>
+    <ellipse cx="200" cy="320" rx="40" ry="80" fill="#FFFFFF" stroke="none"/>
+    <!-- rayas del cuerpo -->
+    <path d="M128 300c16 4 26 0 34-8M124 340c16 4 26 0 34-8M272 300c-16 4-26 0-34-8M276 340c-16 4-26 0-34-8" fill="none" stroke="#C99D00" stroke-width="7"/>
+    <!-- patas -->
+    <rect x="160" y="348" width="34" height="92" rx="17" fill="#FDD86A"/>
+    <rect x="206" y="348" width="34" height="92" rx="17" fill="#FDD86A"/>
+    <ellipse cx="176" cy="440" rx="24" ry="13" fill="#FFFFFF"/>
+    <ellipse cx="224" cy="440" rx="24" ry="13" fill="#FFFFFF"/>
+    <!-- collar -->
+    <path d="M146 222c34 14 74 14 108 0" fill="none" stroke="#0F6267" stroke-width="16"/>
+    <circle cx="200" cy="246" r="14" fill="#FECA0C"/>
+    <!-- orejas -->
+    <path d="M122 126l10-84 56 50z" fill="#FDD86A"/>
+    <path d="M278 126l-10-84-56 50z" fill="#FDD86A"/>
+    <!-- cabeza -->
+    <ellipse cx="200" cy="158" rx="90" ry="76" fill="#FDD86A"/>
+  </g>
+  <!-- interior de las orejas -->
+  <path d="M138 104l6-42 30 26z" fill="#F7B6C8"/>
+  <path d="M262 104l-6-42-30 26z" fill="#F7B6C8"/>
+  <!-- rayas de la frente -->
+  <path d="M200 92v24M180 96l4 18M220 96l-4 18" fill="none" stroke="#C99D00" stroke-width="7" stroke-linecap="round"/>
+  <!-- hocico y mejillas -->
+  <ellipse cx="200" cy="194" rx="44" ry="28" fill="#FFFFFF"/>
+  <path d="M190 182h20l-10 11z" fill="#E9788F" stroke="#073F40" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M200 193v8m0 0c-6 8-16 7-20 0m20 0c6 8 16 7 20 0" fill="none" stroke="#073F40" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- bigotes -->
+  <path d="M150 190l-46-8M150 202l-44 6M250 190l46-8M250 202l44 6" fill="none" stroke="#073F40" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- ojos -->
+  <ellipse cx="164" cy="152" rx="15" ry="17" fill="#0F6267" stroke="#073F40" stroke-width="4"/>
+  <ellipse cx="236" cy="152" rx="15" ry="17" fill="#0F6267" stroke="#073F40" stroke-width="4"/>
+  <ellipse cx="164" cy="153" rx="4.5" ry="12" fill="#042A2B"/>
+  <ellipse cx="236" cy="153" rx="4.5" ry="12" fill="#042A2B"/>
+  <circle cx="169" cy="146" r="3.5" fill="#FFFFFF"/>
+  <circle cx="241" cy="146" r="3.5" fill="#FFFFFF"/>
+  <!-- cascabel -->
+  <path d="M188 246h24M200 250v8" fill="none" stroke="#073F40" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

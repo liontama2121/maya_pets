@@ -43,6 +43,20 @@
       "when": 1791511226110,
       "tag": "0005_adopcion",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792257309855,
+      "tag": "0006_contenido_sitio",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792258078358,
+      "tag": "0007_cuentas_equipo",
+      "breakpoints": true
     }
   ]
 }

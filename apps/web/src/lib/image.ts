@@ -20,8 +20,10 @@ export async function prepareImage(file: File, maxSide = 1600): Promise<{ blob: 
   return { blob, width, height };
 }
 
-export async function uploadImage(file: File, folder: "productos" | "categorias" | "perritos") {
-  const { blob, width, height } = await prepareImage(file);
+type Folder = "productos" | "categorias" | "perritos" | "contenido";
+
+/** Sube una imagen ya preparada (WebP) a R2. */
+export async function uploadBlob(blob: Blob, folder: Folder) {
   const form = new FormData();
   const type = blob.type || "image/webp";
   form.append("file", new File([blob], "foto.webp", { type }));
@@ -29,5 +31,10 @@ export async function uploadImage(file: File, folder: "productos" | "categorias"
   const res = await fetch("/api/admin/uploads", { method: "POST", body: form, credentials: "same-origin" });
   const data = (await res.json().catch(() => ({}))) as { key?: string; url?: string; error?: string };
   if (!res.ok || !data.key) throw new Error(data.error ?? "No se pudo subir la foto.");
-  return { key: data.key, url: data.url!, width, height };
+  return { key: data.key, url: data.url! };
+}
+
+export async function uploadImage(file: File, folder: Folder) {
+  const { blob, width, height } = await prepareImage(file);
+  return { ...(await uploadBlob(blob, folder)), width, height };
 }

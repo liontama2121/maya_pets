@@ -5,7 +5,9 @@ import { CalendarStar } from "@phosphor-icons/react/dist/ssr/CalendarStar";
 import { Coin } from "@phosphor-icons/react/dist/ssr/Coin";
 import { Dog } from "@phosphor-icons/react/dist/ssr/Dog";
 import { House } from "@phosphor-icons/react/dist/ssr/House";
+import { Notepad } from "@phosphor-icons/react/dist/ssr/Notepad";
 import { PaintBrush } from "@phosphor-icons/react/dist/ssr/PaintBrush";
+import { UsersThree } from "@phosphor-icons/react/dist/ssr/UsersThree";
 import { Trophy } from "@phosphor-icons/react/dist/ssr/Trophy";
 import { Package } from "@phosphor-icons/react/dist/ssr/Package";
 import { SquaresFour } from "@phosphor-icons/react/dist/ssr/SquaresFour";
@@ -19,9 +21,11 @@ interface Props {
 const { title } = Astro.props;
 const staff = Astro.locals.staff!;
 const path = Astro.url.pathname;
+const onlyEditor = staff.roles.length === 1 && staff.roles[0] === "editor";
 
 const nav = [
-  { href: "/admin", label: "Resumen", Icon: House, show: true, exact: true },
+  { href: "/admin", label: "Resumen", Icon: House, show: !onlyEditor, exact: true },
+  { href: "/admin/contenido", label: "Contenido del sitio", Icon: Notepad, show: hasRole(staff, "editor") },
   { href: "/admin/productos", label: "Productos", Icon: Package, show: hasRole(staff, "vendedor") },
   { href: "/admin/adopciones", label: "Adopción", Icon: Dog, show: hasRole(staff, "adopciones") },
   { href: "/admin/coin", label: "Entregar COIN", Icon: Coin, show: hasRole(staff, "vendedor") },
@@ -29,10 +33,17 @@ const nav = [
   { href: "/admin/temporadas", label: "Temporadas", Icon: CalendarStar, show: hasRole(staff) },
   { href: "/admin/concurso", label: "Concurso", Icon: Trophy, show: hasRole(staff) },
   { href: "/admin/kids", label: "MAYA Kids", Icon: PaintBrush, show: hasRole(staff) },
+  { href: "/admin/equipo", label: "Equipo", Icon: UsersThree, show: hasRole(staff) },
 ].filter((n) => n.show);
 
 const isCurrent = (href: string, exact = false) => (exact ? path === href : path === href || path.startsWith(`${href}/`));
-const roleLabel = staff.roles.includes("admin") ? "Administradora" : staff.roles.includes("vendedor") ? "Ventas" : "Adopciones";
+const roleLabel = staff.roles.includes("admin")
+  ? "Administradora"
+  : staff.roles.includes("vendedor")
+    ? "Ventas"
+    : staff.roles.includes("editor")
+      ? "Contenido"
+      : "Adopciones";
 ---
 
 <!doctype html>

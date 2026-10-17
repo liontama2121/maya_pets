@@ -1,4 +1,4 @@
-import { authConfigured, identifyStaff } from "@maya/api";
+import { authConfigured, hasRole, identifyStaff } from "@maya/api";
 import { defineMiddleware } from "astro:middleware";
 
 /**
@@ -21,9 +21,24 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
     const m = pathname.match(re);
     if (m) return ctx.redirect(`${target}${m[1] ?? ""}${ctx.url.search}`, 301);
   }
-  if (!pathname.startsWith("/admin")) return next();
-
   const env = ctx.locals.runtime.env;
+
+  if (!pathname.startsWith("/admin")) {
+    if (!ctx.url.searchParams.has("borrador") || pathname.startsWith("/api") || !authConfigured(env)) return next();
+    // Vista previa de "Contenido del sitio": solo con sesión de editor o admin; nunca se guarda en caché.
+    try {
+      ctx.locals.contentDraft = hasRole(await identifyStaff(ctx.request, env), "editor");
+    } catch {
+      ctx.locals.contentDraft = false;
+    }
+    const res = await next();
+    if (ctx.locals.contentDraft) {
+      res.headers.set("Cache-Control", "no-store");
+      res.headers.set("X-Robots-Tag", "noindex");
+    }
+    return res;
+  }
+
   const isLogin = pathname === "/admin/login" || pathname === "/admin/login/";
 
   if (!authConfigured(env)) {

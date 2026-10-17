@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Astro 5 (SSR, `@astrojs/cloudflare`) + Tailwind v4, islas React solo donde hace falta (carrito, POS, panel). API Hono montada en el mismo Worker de Astro, Drizzle sobre Cloudflare D1 remota (token de API; sin Docker ni emulación local). Imágenes en R2. Login del panel con Cloudflare Access; roles `admin`, `vendedor`, `adopciones` guardados en D1 por correo. Pagos Wompi (sandbox). Animación con anime.js v4. Decisiones del usuario 2026-10-07: D1, sin Docker, Cloudflare Access en lugar de Keycloak.
+Astro 5 (SSR, `@astrojs/cloudflare`) + Tailwind v4, islas React solo donde hace falta (carrito, POS, panel). API Hono montada en el mismo Worker de Astro, Drizzle sobre Cloudflare D1 remota (token de API; sin Docker ni emulación local). Imágenes en R2. Login del panel con usuario y contraseña: la dueña por secretos de Cloudflare y el equipo en D1 (PBKDF2); roles `admin`, `vendedor`, `adopciones`, `editor`. Textos e imágenes del inicio, footer y Nosotros se editan en "Contenido del sitio" (borrador, vista previa, publicar sin deploy, historial). Pagos Wompi (sandbox). Animación con anime.js v4. Decisiones del usuario 2026-10-07: D1, sin Docker, Cloudflare Access en lugar de Keycloak.
 
 ## Users
 
@@ -17,6 +17,7 @@ Astro 5 (SSR, `@astrojs/cloudflare`) + Tailwind v4, islas React solo donde hace 
 - **Luisa, dueña de la tienda**: no técnica. Sube ella misma categorías y productos, activa eventos de temporada y controla ventas online y en la tienda física. Rol `admin`.
 - **Vendedor de mostrador** (rol `vendedor`): POS, pedidos, consulta de inventario.
 - **Equipo de adopciones** (rol `adopciones`): solo el módulo de adopción.
+- **Quien edita el contenido** (rol `editor`): solo "Contenido del sitio".
 
 ## Product Purpose
 
